@@ -3,4 +3,4 @@ export default {
   GRAPHQL: 'GRAPHQL',
   EVENT_CHANNEL: 'EVENT_CHANNEL',
   CUSTOM: 'CUSTOM'
-}
+};
