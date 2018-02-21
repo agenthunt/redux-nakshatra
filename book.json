@@ -1,0 +1,19 @@
+{
+  "gitbook": "3.2.2",
+  "title": "Redux-Nakshatra",
+  "plugins": ["edit-link", "prism", "-highlight", "github", "anchorjs"],
+  "pluginsConfig": {
+    "edit-link": {
+      "base": "https://github.com/agenthunt/redux-nakshatra/tree/master",
+      "label": "Edit This Page"
+    },
+    "github": {
+      "url": "https://github.com/agenthunt/redux-nakshatra/"
+    },
+    "theme-default": {
+      "styles": {
+        "website": "build/gitbook.css"
+      }
+    }
+  }
+}

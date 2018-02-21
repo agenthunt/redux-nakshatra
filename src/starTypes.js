@@ -1,0 +1,6 @@
+export default {
+  REST: 'REST',
+  GRAPHQL: 'GRAPHQL',
+  EVENT_CHANNEL: 'EVENT_CHANNEL',
+  CUSTOM: 'CUSTOM'
+}
