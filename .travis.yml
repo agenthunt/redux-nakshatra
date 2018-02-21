@@ -3,6 +3,8 @@ node_js:
   - "8"
 before_install:
   - npm i -g npm
+  - npm i -g npm-install-peers
+  - npm-install-peers
 script:
   - npm run examples:lint
   - npm run examples:test
