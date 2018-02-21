@@ -27,7 +27,7 @@
     "build":
       "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepare":
-      "npm run clean && npm run format:check && npm run lint && npm test && npm run build",
+      "npm-install-peers && npm run clean && npm run format:check && npm run lint && npm test && npm run build",
     "examples:lint": "eslint examples",
     "examples:test": "cross-env CI=true babel-node examples/testAll.js",
     "docs:clean": "rimraf _book",
