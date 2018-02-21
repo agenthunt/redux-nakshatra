@@ -4,6 +4,7 @@ node_js:
 before_install:
   - npm i -g npm
   - npm i -g npm-install-peers
+after_install:
   - npm-install-peers
 script:
   - npm run examples:lint
