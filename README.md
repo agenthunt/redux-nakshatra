@@ -30,11 +30,11 @@ manager.
   describe using the `createStar` function
 
 ```js
-import { createStar } from 'redux-nakshatra'
+import { createStar, StarTypes } from 'redux-nakshatra'
 
 export { rootSaga, types, actions, rootReducer }  = createStar({
   name: 'post',
-  type: 'rest',
+  starType: StarTypes.REST, // default is StarTypes.REST
   url: 'http://localhost:5000/posts'
 })
 ```
@@ -138,11 +138,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(PostsView);
 
 ## Examples
 
-Almost all examples have a corresponding CodeSandbox sandbox. This is an
-interactive version of the code that you can play with online.
-
-* [Simple Blog](http://redux-nakshatra.js.org/docs/introduction/Examples.html#simple-blog)
-  ([source](https://github.com/agenthunt/redux-nakshatra/tree/master/examples/simple-blog))
+* [Simple Blog](https://github.com/agenthunt/redux-nakshatra/tree/master/examples/simple-blog)
 
 ## License
 
