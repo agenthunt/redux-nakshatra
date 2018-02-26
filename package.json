@@ -1,6 +1,6 @@
 {
   "name": "redux-nakshatra",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description":
     "Redux addon library generates Sagas, Types, Actions, Reducers",
   "main": "lib/redux-nakshatra.js",

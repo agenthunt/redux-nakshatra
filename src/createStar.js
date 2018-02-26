@@ -18,7 +18,7 @@ import StarTypes from './starTypes';
  * @property {add}
  * @property {types}
  * @property {actions}
- * @property {reducers}
+ * @property {reducer}
  * @property {sagas}
  * @property {log}
  *
@@ -39,7 +39,7 @@ export function createStar({
   add,
   types: moreTypes,
   actions: moreActions,
-  reducers: moreReducers,
+  reducer,
   sagas: moreSagas,
   log = false
 }) {
@@ -79,7 +79,7 @@ export function createStar({
     pluralName,
     types,
     generateDefault,
-    moreReducers,
+    reducer,
     add
   });
 

@@ -22,7 +22,7 @@ class NavigationBar extends Component {
         author: faker.name.findName(),
         author_image: faker.image.avatar(),
         release_date: faker.date.recent(),
-        image: faker.image.abstract(),
+        image: `${faker.image.nature()}/${this.props.posts.items.length}`,
         short_description: faker.lorem.sentence(),
         long_description: faker.lorem.paragraphs()
       }

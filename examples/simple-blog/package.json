@@ -15,10 +15,13 @@
     "redux-saga": "0.16.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently 'json-server --watch server/db.json --port 5000'  'react-scripts start'",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "start-server": "json-server --watch server/db.json --port 5000"
+  },
+  "devDependencies": {
+    "concurrently": "3.5.1"
   }
 }

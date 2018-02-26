@@ -5,7 +5,7 @@ export default function createRootReducer({
   pluralName,
   types,
   generateDefault,
-  moreReducers,
+  reducer,
   add
 }) {
   const nameUpperCase = name.toUpperCase();
@@ -166,14 +166,14 @@ export default function createRootReducer({
     });
   const reducers = {
     ...defaultReducers,
-    ...moreReducers,
     ...addReducers
   };
 
   function rootReducer(state = initialState, action) {
-    const reducer = reducers[action.type];
-    if (reducer) {
-      return reducer(state, action);
+    reducer && reducer(state, action);
+    const selectedReducer = reducers[action.type];
+    if (selectedReducer) {
+      return selectedReducer(state, action);
     }
 
     return state;

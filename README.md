@@ -1,7 +1,7 @@
 Under development
 
 redux-nakshatra is a redux addon library that reduces redux boiler plate. This library
-aims to automate most of them with a set of opiniated conventions. Generates Sagas, Types, Actions, Reducers (STAR aka nakshatra)
+aims to automate most of them with a set of opinionated conventions. Generates Sagas, Types, Actions, Reducers (STAR aka nakshatra)
 
 [![build status](https://img.shields.io/travis/agenthunt/redux-nakshatra/master.svg?style=flat-square)](https://travis-ci.org/agenthunt/redux-nakshatra)
 [![npm version](https://img.shields.io/npm/v/redux-nakshatra.svg?style=flat-square)](https://www.npmjs.com/package/redux-nakshatra)

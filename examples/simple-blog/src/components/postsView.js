@@ -1,9 +1,18 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Button,
+  ActivityIndicator
+} from 'react-native';
 import { connect } from 'react-redux';
 import * as Posts from '../stars/posts';
 import { bindActionCreators } from 'redux';
 import CommonStyles from '../styles/commonStyles';
+import faker from 'faker';
 
 const styles = StyleSheet.create({
   container: {
@@ -17,10 +26,10 @@ const styles = StyleSheet.create({
     width: 320,
     height: 320,
     margin: 20,
-    paddingHorizontal: 20,
     paddingTop: 20,
     alignItems: 'center',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
+    backgroundColor: 'black'
   },
   title: {
     fontSize: 24
@@ -38,8 +47,17 @@ const styles = StyleSheet.create({
   section: {
     flex: 0.2,
     marginTop: 16,
-    borderTopWidth: 1,
-    borderColor: 'gray'
+    alignSelf: 'stretch'
+  },
+  backgroundContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    opacity: 0.4,
+    alignItems: 'center'
   },
   image: {
     position: 'absolute',
@@ -47,6 +65,12 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     top: 0
+  },
+  deleteUpdateContainer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    flexDirection: 'row'
   }
 });
 
@@ -54,8 +78,27 @@ class PostsView extends Component {
   componentDidMount() {
     this.props.actions.getPosts();
   }
+  deletePost = item => {
+    this.props.actions.deletePost({
+      url: `http://localhost:5000/posts/${item.id}`
+    });
+  };
 
-  renderItem(item, index, array) {
+  updatePost = item => {
+    this.props.actions.updatePost({
+      url: `http://localhost:5000/posts/${item.id}`,
+      data: {
+        title: faker.lorem.words(),
+        author: faker.name.findName(),
+        author_image: faker.image.avatar(),
+        release_date: faker.date.recent(),
+        image: `${faker.image.nature()}/${this.props.posts.items.length}`,
+        short_description: faker.lorem.sentence(),
+        long_description: faker.lorem.paragraphs()
+      }
+    });
+  };
+  renderItem = (item, index, array) => {
     return (
       <TouchableOpacity key={index}>
         <View style={[styles.itemContainer, CommonStyles.card]}>
@@ -64,17 +107,28 @@ class PostsView extends Component {
             style={styles.image}
           />
           <View style={styles.section}>
-            <Text numberOfLines={1} style={styles.title}>
-              {item.title}
-            </Text>
-            <Text numberOfLines={1} style={styles.author}>
-              {item.author}
-            </Text>
+            <View style={styles.backgroundContainer}>
+              <Text numberOfLines={1} style={styles.title}>
+                {item.title}
+              </Text>
+              <Text numberOfLines={1} style={styles.author}>
+                {item.author}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.deleteUpdateContainer}>
+            <Button title="Update" onPress={() => this.updatePost(item)} />
+            <TouchableOpacity onPress={() => this.deletePost(item)}>
+              <Image
+                source={require('../images/delete_white_48x48.png')}
+                style={{ width: 36, height: 36 }}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </TouchableOpacity>
     );
-  }
+  };
   render() {
     return (
       <View style={[styles.container, this.props.style]}>
