@@ -1,5 +1,3 @@
-## Table of Contents
-
 * [Read Me](/README.md)
 * [Detailed](/docs/Detailed.md)
 * [Troubleshooting](/docs/Troubleshooting.md)

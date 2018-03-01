@@ -1,12 +1,17 @@
 {
   "name": "redux-nakshatra",
   "version": "0.0.2",
-  "description":
-    "Redux addon library generates Sagas, Types, Actions, Reducers",
+  "description": "Redux addon library generates Sagas, Types, Actions, Reducers",
   "main": "lib/redux-nakshatra.js",
   "module": "es/redux-nakshatra.js",
   "typings": "./index.d.ts",
-  "files": ["dist", "lib", "es", "src", "index.d.ts"],
+  "files": [
+    "dist",
+    "lib",
+    "es",
+    "src",
+    "index.d.ts"
+  ],
   "scripts": {
     "clean": "rimraf lib dist es coverage",
     "format": "prettier --write '{src,test}/**/*.js'",
@@ -16,27 +21,19 @@
     "test": "cross-env BABEL_ENV=commonjs jest",
     "test:watch": "npm test -- --watch",
     "test:cov": "npm test -- --coverage",
-    "build:commonjs":
-      "cross-env NODE_ENV=cjs rollup -c -o lib/redux-nakshatra.js",
-    "build:es":
-      "cross-env BABEL_ENV=es NODE_ENV=es rollup -c -o es/redux-nakshatra.js",
-    "build:umd":
-      "cross-env BABEL_ENV=es NODE_ENV=development rollup -c -o dist/redux-nakshatra.js",
-    "build:umd:min":
-      "cross-env BABEL_ENV=es NODE_ENV=production rollup -c -o dist/redux-nakshatra.min.js",
-    "build":
-      "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "prepare":
-      "npm-install-peers && npm run clean && npm run format:check && npm run lint && npm test && npm run build",
+    "build:commonjs": "cross-env NODE_ENV=cjs rollup -c -o lib/redux-nakshatra.js",
+    "build:es": "cross-env BABEL_ENV=es NODE_ENV=es rollup -c -o es/redux-nakshatra.js",
+    "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development rollup -c -o dist/redux-nakshatra.js",
+    "build:umd:min": "cross-env BABEL_ENV=es NODE_ENV=production rollup -c -o dist/redux-nakshatra.min.js",
+    "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "prepare": "npm-install-peers && npm run clean && npm run format:check && npm run lint && npm test && npm run build",
     "examples:lint": "eslint examples",
     "examples:test": "cross-env CI=true babel-node examples/testAll.js",
     "docs:clean": "rimraf _book",
     "docs:prepare": "gitbook install",
-    "docs:build":
-      "npm run docs:prepare && gitbook build -g agenthunt/redux-nakshatra",
+    "docs:build": "npm run docs:prepare && gitbook build -g agenthunt/redux-nakshatra",
     "docs:watch": "npm run docs:prepare && gitbook serve",
-    "docs:publish":
-      "npm run docs:clean && npm run docs:build && cp CNAME _book && cd _book && git init && git commit --allow-empty -m 'update book' && git checkout -b gh-pages && touch .nojekyll && git add . && git commit -am 'update book' && git push https://github.com/agenthunt/redux-nakshatra.git gh-pages --force"
+    "docs:publish": "npm run docs:clean && npm run docs:build && cp CNAME _book && cd _book && git init && git commit --allow-empty -m 'update book' && git checkout -b gh-pages && touch .nojekyll && git add . && git commit -am 'update book' && git push https://github.com/agenthunt/redux-nakshatra.git gh-pages --force"
   },
   "repository": {
     "type": "git",
@@ -67,7 +64,7 @@
   },
   "homepage": "http://redux-nakshatra.js.org",
   "dependencies": {
-    "gitbook-plugin-anchorjs": "1.1.1",
+    "gitbook-plugin-anchorjs": "2.0.0",
     "gitbook-plugin-edit-link": "2.0.2",
     "gitbook-plugin-github": "2.0.0",
     "gitbook-plugin-prism": "2.3.0",
@@ -114,11 +111,15 @@
   "npmFileMap": [
     {
       "basePath": "/dist/",
-      "files": ["*.js"]
+      "files": [
+        "*.js"
+      ]
     }
   ],
   "browserify": {
-    "transform": ["loose-envify"]
+    "transform": [
+      "loose-envify"
+    ]
   },
   "jest": {
     "testRegex": "(/test/.*\\.spec.js)$",

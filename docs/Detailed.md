@@ -8,7 +8,7 @@ export { rootSaga, types, actions, rootReducer }  = createStar({
 
 will generate the following
 
-1. Types
+* Types
 
 ```js
 const GET_POST_REQUEST = '@star/GET_POST_REQUEST';
@@ -28,7 +28,7 @@ const DELETE_POST_SUCCESS = '@star/DELETE_POST_SUCCESS';
 const DELETE_POST_FAILURE = '@star/DELETE_POST_FAILURE';
 ```
 
-2. Actions
+* Actions
 
 ```js
 function createPost(obj) {
@@ -55,5 +55,133 @@ function updatePost(obj) {
   return {
     type: '@star/UPDATE_POST_REQUEST'
   };
+}
+```
+
+* Sagas
+
+Simplified code shown here for illustration.
+
+```js
+function* watchCreatePostRequestSaga() {
+    while (true) {
+      const request = yield take('@star/CREATE_POST_REQUEST');
+      try {
+        const result = yield call(() => axios.post(...)); //
+            .....
+        if (result.status !== 200) {
+          throw result;
+        }
+        yield put({
+          type: '@star/CREATE_POST_SUCCESS',
+          response:
+            (transformResponse && transformResponse(result)) || result
+        });
+      } catch (error) {
+        log && console.error(error);
+        yield put({
+          type: '@star/CREATE_POST_FAILURE',
+          response: error
+        });
+      }
+    }
+  }
+}
+function* watchDeletePostRequestSaga() {
+    while (true) {
+      const request = yield take('@star/DELETE_POST_REQUEST');
+      try {
+        const result = yield call(() => axios.delete(...)); //
+            .....
+        if (result.status !== 200) {
+          throw result;
+        }
+        yield put({
+          type: '@star/DELETE_POST_SUCCESS',
+          response:
+            (transformResponse && transformResponse(result)) || result
+        });
+      } catch (error) {
+        log && console.error(error);
+        yield put({
+          type: '@star/DELETE_POST_FAILURE',
+          response: error
+        });
+      }
+    }
+  }
+}
+function* watchGetPostRequestSaga() {
+    while (true) {
+      const request = yield take('@star/GET_POST_REQUEST');
+      try {
+        const result = yield call(() => axios.get(...)); //
+            .....
+        if (result.status !== 200) {
+          throw result;
+        }
+        yield put({
+          type: '@star/GET_POST_SUCCESS',
+          response:
+            (transformResponse && transformResponse(result)) || result
+        });
+      } catch (error) {
+        log && console.error(error);
+        yield put({
+          type: '@star/GET_POST_FAILURE',
+          response: error
+        });
+      }
+    }
+  }
+}
+function* watchGetPostsRequestSaga() {
+    while (true) {
+      const request = yield take('@star/GET_POSTS_REQUEST');
+      try {
+        const result = yield call(() => axios.get(...)); //
+            .....
+        if (result.status !== 200) {
+          throw result;
+        }
+        yield put({
+          type: '@star/GET_POSTS_SUCCESS',
+          response:
+            (transformResponse && transformResponse(result)) || result
+        });
+      } catch (error) {
+        log && console.error(error);
+        yield put({
+          type: '@star/GET_POSTS_FAILURE',
+          response: error
+        });
+      }
+    }
+  }
+}
+function* watchUpdatePostRequestSaga() {
+    while (true) {
+      const request = yield take('@star/UPDATE_POST_REQUEST');
+      try {
+        const result = yield call(() => axios.patch(...)); //
+            .....
+        if (result.status !== 200) {
+          throw result;
+        }
+        yield put({
+          type: '@star/UPDATE_POST_SUCCESS',
+          response:
+            (transformResponse && transformResponse(result)) || result
+        });
+      } catch (error) {
+        log && console.error(error);
+        yield put({
+          type: '@star/UPDATE_POST_FAILURE',
+          response: error
+        });
+      }
+    }
+  }
+
 }
 ```
