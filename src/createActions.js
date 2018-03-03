@@ -1,9 +1,10 @@
-import { ucfirst, httpMethodToCRUDName } from './utils';
+import { ucfirst, httpMethodToCRUDName } from './utils/index';
 
 export default function createActions({
   name,
   pluralName,
   types,
+  starType,
   generateDefault,
   moreActions,
   add

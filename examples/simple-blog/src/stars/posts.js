@@ -1,16 +1,9 @@
 import { createStar, StarTypes } from 'redux-nakshatra';
 import { take, put } from 'redux-saga/effects';
-let tmp = null;
+
 const postStar = createStar({
   name: 'post',
   url: 'http://localhost:5000/posts',
-  override: {
-    getPosts: {
-      transformResponse: response => {
-        return response.data;
-      }
-    }
-  },
   types: {
     UPDATE_STATE_AFTER_UPDATE_POST_SUCCESS:
       'UPDATE_STATE_AFTER_UPDATE_POST_SUCCESS'
@@ -50,8 +43,7 @@ const postStar = createStar({
 });
 
 export const CustomStar = createStar({
-  type: StarTypes.CUSTOM,
-  generateDefault: false,
+  starType: StarTypes.CUSTOM,
   sagas: {
     *watchCreatePostSuccessRequestSaga() {
       while (true) {

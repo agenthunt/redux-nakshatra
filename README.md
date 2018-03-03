@@ -111,7 +111,8 @@ class PostsView extends Component {
     return (
       <View style={[styles.container, this.props.style]}>
         {this.renderItem({ title: 'Title', author: 'Author' }, -1)}
-        {this.props.posts.items && this.props.posts.items.map(this.renderItem)}
+        {this.props.posts.items.data &&
+          this.props.posts.items.data.map(this.renderItem)}
       </View>
     );
   }

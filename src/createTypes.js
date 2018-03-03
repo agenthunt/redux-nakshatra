@@ -1,7 +1,8 @@
-import { httpMethodToCRUDName } from './utils';
+import { httpMethodToCRUDName } from './utils/index';
 export default function createTypes({
   name,
   pluralName,
+  starType,
   generateDefault,
   add,
   moreTypes

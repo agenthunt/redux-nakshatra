@@ -1,4 +1,8 @@
-import { ucfirst, httpMethodToCRUDName } from './utils';
+import {
+  ucfirst,
+  httpMethodToCRUDName,
+  replacePathParamsByValue
+} from './utils/index';
 import { take, call, put, all, fork } from 'redux-saga/effects';
 import axios from 'axios';
 import idx from 'idx';
@@ -9,6 +13,7 @@ export default function createSagas({
   types,
   url,
   override,
+  starType,
   generateDefault,
   log,
   moreSagas,
@@ -27,14 +32,25 @@ export default function createSagas({
           const request = yield take(
             types[`GET_${pluralNameUpperCase}_REQUEST`]
           );
+
+          const pathParams = idx(request, _ => _.obj.pathParams);
+          let finalizedUrl = url;
+          if (idx(request, _ => _.obj.url)) {
+            const urlFromObj = idx(request, _ => _.obj.url);
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else if (idx(override, _ => _[`get${ucFirstPluralName}`].url)) {
+            const urlFromObj = idx(
+              override,
+              _ => _[`get${ucFirstPluralName}`].url
+            );
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          }
+
           try {
             const result = yield call(() =>
               axios({
                 method: 'get',
-                url:
-                  idx(request, _ => _.obj.url) ||
-                  idx(override, _ => _[`get${ucFirstPluralName}`].url) ||
-                  url,
+                url: finalizedUrl,
                 headers:
                   idx(request, _ => _.obj.headers) ||
                   idx(override, _ => _[`get${ucFirstPluralName}`].headers) ||
@@ -69,14 +85,32 @@ export default function createSagas({
       *[`watchGet${ucFirstName}RequestSaga`]() {
         while (true) {
           const request = yield take(types[`GET_${nameUpperCase}_REQUEST`]);
+
+          const pathParams = idx(request, _ => _.obj.pathParams);
+          let finalizedUrl = url; // use url value the createStar configuration
+          if (idx(request, _ => _.obj.url)) {
+            // 1. Check in request obj
+            const urlFromObj = idx(request, _ => _.obj.url);
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else if (idx(override, _ => _[`get${ucFirstName}`].url)) {
+            // 2. Next check in override configuration
+            const urlFromObj = idx(override, _ => _[`get${ucFirstName}`].url);
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else {
+            // use standard REST convention, i.e for singular get, patch and delete expect an id path param
+            if (!pathParams || !pathParams.id) {
+              throw new Error(
+                `Expecting get${ucFirstName} {pathParams: { id: <someValue> }}`
+              );
+            }
+            finalizedUrl = `${url}/${pathParams.id}`;
+          }
+
           try {
             const result = yield call(() =>
               axios({
                 method: 'get',
-                url:
-                  idx(request, _ => _.obj.url) ||
-                  idx(override, _ => _[`get${ucFirstName}`].url) ||
-                  url,
+                url: finalizedUrl,
                 headers:
                   idx(request, _ => _.obj.headers) ||
                   idx(override, _ => _[`get${ucFirstName}`].headers) ||
@@ -106,14 +140,26 @@ export default function createSagas({
       *[`watchCreate${ucFirstName}RequestSaga`]() {
         while (true) {
           const request = yield take(types[`CREATE_${nameUpperCase}_REQUEST`]);
+          const pathParams = idx(request, _ => _.obj.pathParams);
+          let finalizedUrl = url; // use url value the createStar configuration
+          if (idx(request, _ => _.obj.url)) {
+            // 1. Check in request obj
+            const urlFromObj = idx(request, _ => _.obj.url);
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else if (idx(override, _ => _[`create${ucFirstName}`].url)) {
+            // 2. Next check in override configuration
+            const urlFromObj = idx(
+              override,
+              _ => _[`create${ucFirstName}`].url
+            );
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          }
+
           try {
             const result = yield call(() =>
               axios({
                 method: 'post',
-                url:
-                  idx(request, _ => _.obj.url) ||
-                  idx(override, _ => _[`create${ucFirstName}`].url) ||
-                  url,
+                url: finalizedUrl,
                 headers:
                   idx(request, _ => _.obj.headers) ||
                   idx(override, _ => _[`create${ucFirstName}`].headers) ||
@@ -146,14 +192,33 @@ export default function createSagas({
       *[`watchDelete${ucFirstName}RequestSaga`]() {
         while (true) {
           const request = yield take(types[`DELETE_${nameUpperCase}_REQUEST`]);
+
+          const pathParams = idx(request, _ => _.obj.pathParams);
+          let finalizedUrl = url; // use url value the createStar configuration
+          if (idx(request, _ => _.obj.url)) {
+            // 1. Check in request obj
+            const urlFromObj = idx(request, _ => _.obj.url);
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else if (idx(override, _ => _[`delete${ucFirstName}`].url)) {
+            // 2. Next check in override configuration
+            const urlFromObj = idx(
+              override,
+              _ => _[`delete${ucFirstName}`].url
+            );
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else {
+            // use standard REST convention, i.e for singular get, patch and delete expect an id path param
+            if (!pathParams.id) {
+              throw new Error('{pathParams: { id: <someValue> }} expected');
+            }
+            finalizedUrl = replacePathParamsByValue(url, pathParams);
+          }
+
           try {
             const result = yield call(() =>
               axios({
                 method: 'delete',
-                url:
-                  idx(request, _ => _.obj.url) ||
-                  idx(override, _ => _[`delete${ucFirstName}`].url) ||
-                  url,
+                url: finalizedUrl,
                 headers:
                   idx(request, _ => _.obj.headers) ||
                   idx(override, _ => _[`delete${ucFirstName}`].headers) ||
@@ -183,6 +248,27 @@ export default function createSagas({
       *[`watchUpdate${ucFirstName}RequestSaga`]() {
         while (true) {
           const request = yield take(types[`UPDATE_${nameUpperCase}_REQUEST`]);
+          const pathParams = idx(request, _ => _.obj.pathParams);
+          let finalizedUrl = url; // use url value the createStar configuration
+          if (idx(request, _ => _.obj.url)) {
+            // 1. Check in request obj
+            const urlFromObj = idx(request, _ => _.obj.url);
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else if (idx(override, _ => _[`update${ucFirstName}`].url)) {
+            // 2. Next check in override configuration
+            const urlFromObj = idx(
+              override,
+              _ => _[`update${ucFirstName}`].url
+            );
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else {
+            // use standard REST convention, i.e for singular get, patch and delete expect an id path param
+            if (!pathParams.id) {
+              throw new Error('{pathParams: { id: <someValue> }} expected');
+            }
+            finalizedUrl = replacePathParamsByValue(url, pathParams);
+          }
+
           try {
             const result = yield call(() =>
               axios({
@@ -190,10 +276,7 @@ export default function createSagas({
                   idx(request, _ => _.obj.method) ||
                   idx(override, _ => _[`update${ucFirstName}`].method) ||
                   'patch',
-                url:
-                  idx(request, _ => _.obj.url) ||
-                  idx(override, _ => _[`update${ucFirstName}`].url) ||
-                  url,
+                url: finalizedUrl,
                 headers:
                   idx(request, _ => _.obj.headers) ||
                   idx(override, _ => _[`update${ucFirstName}`].headers) ||
@@ -239,6 +322,30 @@ export default function createSagas({
           const request = yield take(
             types[`${actionNameUpperCase}_${nameUpperCase}_REQUEST`]
           );
+
+          const pathParams = idx(request, _ => _.obj.pathParams);
+          let finalizedUrl = addObj.url; // use url value the createStar configuration
+          if (idx(request, _ => _.obj.url)) {
+            // 1. Check in request obj
+            const urlFromObj = idx(request, _ => _.obj.url);
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else if (
+            idx(override, _ => _[`${actionName}${ucFirstName}`].method)
+          ) {
+            // 2. Next check in override configuration
+            const urlFromObj = idx(
+              override,
+              _ => _[`${actionName}${ucFirstName}`].method
+            );
+            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+          } else {
+            // use standard REST convention, i.e for singular get, patch and delete expect an id path param
+            if (!pathParams.id) {
+              throw new Error('{pathParams: { id: <someValue> }} expected');
+            }
+            finalizedUrl = replacePathParamsByValue(addObj.url, pathParams);
+          }
+
           try {
             const result = yield call(() =>
               axios({
@@ -246,10 +353,7 @@ export default function createSagas({
                   idx(request, _ => _.obj.method) ||
                   idx(override, _ => _[`${actionName}${ucFirstName}`].method) ||
                   addObj.method,
-                url:
-                  idx(request, _ => _.obj.url) ||
-                  idx(override, _ => _[`${actionName}${ucFirstName}`].url) ||
-                  addObj.url,
+                url: finalizedUrl,
                 headers:
                   idx(request, _ => _.obj.headers) ||
                   idx(

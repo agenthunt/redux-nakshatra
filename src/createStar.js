@@ -37,20 +37,23 @@ export function createStar({
   generateDefault = true,
   override,
   add,
+  initialState: moreInitialState,
   types: moreTypes,
   actions: moreActions,
   reducer,
   sagas: moreSagas,
   log = false
 }) {
-  if (generateDefault === true) {
-    if (name === undefined || name === null) {
-      throw new Error(
-        'name can be null or undefined only for generateDefault = false'
-      );
-    }
-  } else {
+  if (starType === StarTypes.CUSTOM) {
     name = '';
+  } else {
+    if (generateDefault === true) {
+      if (name === undefined || name === null) {
+        throw new Error(`name cannot be null for StarType.${starType}`);
+      }
+    } else {
+      name = '';
+    }
   }
 
   if (pluralName === null || pluralName === undefined) {
@@ -60,6 +63,7 @@ export function createStar({
   const types = createTypes({
     name,
     pluralName,
+    starType,
     generateDefault,
     moreTypes,
     add
@@ -69,6 +73,7 @@ export function createStar({
     name,
     pluralName,
     types,
+    starType,
     generateDefault,
     moreActions,
     add
@@ -77,7 +82,9 @@ export function createStar({
   const rootReducer = createRootReducer({
     name,
     pluralName,
+    moreInitialState,
     types,
+    starType,
     generateDefault,
     reducer,
     add
@@ -90,6 +97,7 @@ export function createStar({
     url,
     override,
     add,
+    starType,
     generateDefault,
     moreSagas,
     log

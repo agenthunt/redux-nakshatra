@@ -8,9 +8,13 @@ import { bindActionCreators } from 'redux';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 40,
+    borderBottomColor: 'gray'
   }
 });
 

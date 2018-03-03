@@ -1,3 +1,5 @@
+Consider the following example
+
 ```js
 export { rootSaga, types, actions, rootReducer }  = createStar({
   name: 'post',
@@ -6,7 +8,42 @@ export { rootSaga, types, actions, rootReducer }  = createStar({
 })
 ```
 
-will generate the following
+For a `StarTypes.REST`, the interpretation of url is as follows as long as any of the standard actions are overridden. For overriding See [override](/docs/Override.md)
+
+* plural GET requests will use url as defined in the config object i.e `http://localhost:5000/posts`
+* POST request will use url as `http://localhost:5000/posts`
+* PATCH request will url as `http://localhost:5000/posts/:id`
+* DELETE request will url as `http://localhost:5000/posts/:id`
+* singular GET request will url as `http://localhost:5000/posts/:id`
+
+The value of id can be provided in the action object
+For ex:
+
+```js
+Posts.actions.getPost({
+  pathParams: {
+    id: 123
+  }
+});
+
+Posts.actions.deletePost({
+  pathParams: {
+    id: 123
+  }
+});
+
+Posts.actions.updatePost({
+  pathParams: {
+    id: 123
+  },
+  data: {
+    title: 'Updated title',
+    author: 'Neve'
+  }
+});
+```
+
+The `name` value in the config object will be used to generate the following
 
 * Types
 

@@ -1,9 +1,11 @@
-import { ucfirst, httpMethodToCRUDName } from './utils';
+import { ucfirst, httpMethodToCRUDName } from './utils/index';
 
 export default function createRootReducer({
   name,
   pluralName,
   types,
+  starType,
+  moreInitialState,
   generateDefault,
   reducer,
   add
@@ -169,14 +171,23 @@ export default function createRootReducer({
     ...addReducers
   };
 
+  initialState = {
+    ...initialState,
+    ...moreInitialState
+  };
   function rootReducer(state = initialState, action) {
-    reducer && reducer(state, action);
+    let newState = state;
+
     const selectedReducer = reducers[action.type];
     if (selectedReducer) {
-      return selectedReducer(state, action);
+      newState = selectedReducer(state, action);
     }
 
-    return state;
+    if (reducer) {
+      newState = reducer(newState, action);
+    }
+
+    return newState;
   }
   return rootReducer;
 }

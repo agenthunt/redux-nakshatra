@@ -13,6 +13,7 @@ import * as Posts from '../stars/posts';
 import { bindActionCreators } from 'redux';
 import CommonStyles from '../styles/commonStyles';
 import faker from 'faker';
+import * as Navigation from '../stars/navigation';
 
 const styles = StyleSheet.create({
   container: {
@@ -98,9 +99,20 @@ class PostsView extends Component {
       }
     });
   };
+  goToDetailsView = id => {
+    this.props.actions.navigateTo({
+      id: 'postsDetailedView',
+      params: {
+        id
+      }
+    });
+  };
   renderItem = (item, index, array) => {
     return (
-      <TouchableOpacity key={index}>
+      <TouchableOpacity
+        key={index}
+        onPress={() => this.goToDetailsView(item.id)}
+      >
         <View style={[styles.itemContainer, CommonStyles.card]}>
           <Image
             source={{ uri: item.image, width: 320, height: 320 }}
@@ -132,7 +144,9 @@ class PostsView extends Component {
   render() {
     return (
       <View style={[styles.container, this.props.style]}>
-        {this.props.posts.items && this.props.posts.items.map(this.renderItem)}
+        <Text> POSTS VIEW </Text>
+        {this.props.posts.items.data &&
+          this.props.posts.items.data.map(this.renderItem)}
       </View>
     );
   }
@@ -140,12 +154,18 @@ class PostsView extends Component {
 
 const mapStateToProps = state => {
   return {
-    posts: state.posts
+    posts: state.posts,
+    navigation: state.navigation
   };
 };
 
 const mapDispatchToProps = dispatch => {
-  return { actions: bindActionCreators(Posts.actions, dispatch) };
+  return {
+    actions: bindActionCreators(
+      { ...Posts.actions, ...Navigation.actions },
+      dispatch
+    )
+  };
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PostsView);

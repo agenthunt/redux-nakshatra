@@ -3,6 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 import { fork } from 'redux-saga/effects';
 import * as Posts from '../stars/posts';
 import * as Comments from '../stars/comments';
+import * as Navigation from '../stars/navigation';
 
 const composeEnhancers =
   typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -16,7 +17,8 @@ const middlewares = [sagaMiddleware];
 
 const appReducer = combineReducers({
   posts: Posts.rootReducer,
-  comments: Comments.rootReducer
+  comments: Comments.rootReducer,
+  navigation: Navigation.rootReducer
 });
 
 function* rootSaga() {

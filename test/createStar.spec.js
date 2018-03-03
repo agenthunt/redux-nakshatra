@@ -1,4 +1,5 @@
 import { createStar, StarTypes } from '../';
+import { take } from 'redux-saga/effects';
 
 describe('createStar', () => {
   it('exposes the public API', () => {
@@ -36,5 +37,17 @@ describe('createStar', () => {
 
     const initialState = { test: 'test' };
     expect(rootReducer(initialState, { type: 'unknown' })).toBe(initialState);
+  });
+
+  it('should override properly', () => {
+    const { types, actions, rootReducer, rootSaga } = createStar({
+      name: 'post',
+      url: 'http://localhost:5000/posts',
+      override: {
+        getPost: {
+          url: 'http://localhost:5000/posts'
+        }
+      }
+    });
   });
 });
