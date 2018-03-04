@@ -329,14 +329,8 @@ export default function createSagas({
             // 1. Check in request obj
             const urlFromObj = idx(request, _ => _.obj.url);
             finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else if (
-            idx(override, _ => _[`${actionName}${ucFirstName}`].method)
-          ) {
-            // 2. Next check in override configuration
-            const urlFromObj = idx(
-              override,
-              _ => _[`${actionName}${ucFirstName}`].method
-            );
+          } else if (idx(addObj, _ => _.url)) {
+            const urlFromObj = idx(addObj, _ => _.url);
             finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
           } else {
             // use standard REST convention, i.e for singular get, patch and delete expect an id path param
