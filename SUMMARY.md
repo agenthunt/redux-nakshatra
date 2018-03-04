@@ -1,4 +1,5 @@
 * [Read Me](/README.md)
 * [Detailed](/docs/Detailed.md)
+* [Override](/docs/Override.md)
 * [Troubleshooting](/docs/Troubleshooting.md)
 * [API Reference](/docs/api/README.md)
