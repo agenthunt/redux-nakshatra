@@ -106,6 +106,10 @@ export default function createSagas({
             finalizedUrl = `${url}/${pathParams.id}`;
           }
 
+          if (finalizedUrl.trim().length === 0) {
+            throw new Error(`url cannot be empty for ${ucFirstName}`);
+          }
+
           try {
             const result = yield call(() =>
               axios({
@@ -317,69 +321,79 @@ export default function createSagas({
       const ucFirstName = ucfirst(key);
       const actionName = httpMethodToCRUDName[addObj.method];
       const actionNameUpperCase = actionName.toUpperCase();
-      addSagas[`watch${actionName}${ucFirstName}RequestSaga`] = function*() {
-        while (true) {
-          const request = yield take(
-            types[`${actionNameUpperCase}_${nameUpperCase}_REQUEST`]
-          );
-
-          const pathParams = idx(request, _ => _.obj.pathParams);
-          let finalizedUrl = addObj.url; // use url value the createStar configuration
-          if (idx(request, _ => _.obj.url)) {
-            // 1. Check in request obj
-            const urlFromObj = idx(request, _ => _.obj.url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else if (idx(addObj, _ => _.url)) {
-            const urlFromObj = idx(addObj, _ => _.url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else {
-            // use standard REST convention, i.e for singular get, patch and delete expect an id path param
-            if (!pathParams.id) {
-              throw new Error('{pathParams: { id: <someValue> }} expected');
-            }
-            finalizedUrl = replacePathParamsByValue(addObj.url, pathParams);
-          }
-
-          try {
-            const result = yield call(() =>
-              axios({
-                method:
-                  idx(request, _ => _.obj.method) ||
-                  idx(override, _ => _[`${actionName}${ucFirstName}`].method) ||
-                  addObj.method,
-                url: finalizedUrl,
-                headers:
-                  idx(request, _ => _.obj.headers) ||
-                  idx(
-                    override,
-                    _ => _[`${actionName}${ucFirstName}`].headers
-                  ) ||
-                  idx(override, _ => _.headers),
-                params:
-                  idx(request, _ => _.obj.params) ||
-                  idx(override, _ => _[`${actionName}${ucFirstName}`].params) ||
-                  idx(override, _ => _.params),
-                data:
-                  idx(request, _ => _.obj.data) ||
-                  idx(override, _ => _[`${actionName}${ucFirstName}`].data)
-              })
+      if (addObj.saga) {
+        addSagas[`watch${actionName}${ucFirstName}RequestSaga`] = addObj.saga;
+      } else {
+        addSagas[`watch${actionName}${ucFirstName}RequestSaga`] = function*() {
+          while (true) {
+            const request = yield take(
+              types[`${actionNameUpperCase}_${nameUpperCase}_REQUEST`]
             );
-            if (result.status !== 200) {
-              throw result;
+
+            const pathParams = idx(request, _ => _.obj.pathParams);
+            let finalizedUrl = addObj.url; // use url value the createStar configuration
+            if (idx(request, _ => _.obj.url)) {
+              // 1. Check in request obj
+              const urlFromObj = idx(request, _ => _.obj.url);
+              finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+            } else if (idx(addObj, _ => _.url)) {
+              const urlFromObj = idx(addObj, _ => _.url);
+              finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
+            } else {
+              // use standard REST convention, i.e for singular get, patch and delete expect an id path param
+              if (!pathParams.id) {
+                throw new Error('{pathParams: { id: <someValue> }} expected');
+              }
+              finalizedUrl = replacePathParamsByValue(addObj.url, pathParams);
             }
-            yield put({
-              type: types[`${actionNameUpperCase}_${nameUpperCase}_SUCCESS`],
-              response: result
-            });
-          } catch (error) {
-            log && console.error(error);
-            yield put({
-              type: types[`${actionNameUpperCase}_${nameUpperCase}_FAILURE`],
-              response: error
-            });
+
+            try {
+              const result = yield call(() =>
+                axios({
+                  method:
+                    idx(request, _ => _.obj.method) ||
+                    idx(
+                      override,
+                      _ => _[`${actionName}${ucFirstName}`].method
+                    ) ||
+                    addObj.method,
+                  url: finalizedUrl,
+                  headers:
+                    idx(request, _ => _.obj.headers) ||
+                    idx(
+                      override,
+                      _ => _[`${actionName}${ucFirstName}`].headers
+                    ) ||
+                    idx(override, _ => _.headers),
+                  params:
+                    idx(request, _ => _.obj.params) ||
+                    idx(
+                      override,
+                      _ => _[`${actionName}${ucFirstName}`].params
+                    ) ||
+                    idx(override, _ => _.params),
+                  data:
+                    idx(request, _ => _.obj.data) ||
+                    idx(override, _ => _[`${actionName}${ucFirstName}`].data)
+                })
+              );
+              if (result.status !== 200) {
+                throw result;
+              }
+              yield put({
+                type: types[`${actionNameUpperCase}_${nameUpperCase}_SUCCESS`],
+                response: result
+              });
+            } catch (error) {
+              log && console.error(error);
+              yield put({
+                type: types[`${actionNameUpperCase}_${nameUpperCase}_FAILURE`],
+                response: error
+              });
+            }
           }
-        }
-      };
+        };
+      }
     });
   const sagas = {
     ...defaultSagas,

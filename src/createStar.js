@@ -56,6 +56,15 @@ export function createStar({
     }
   }
 
+  if (starType === StarTypes.REST) {
+    if (!url) {
+      throw new Error('url cannot be undefined or null');
+    }
+    if (url.trim().length === 0) {
+      throw new Error('url cannot be empty');
+    }
+  }
+
   if (pluralName === null || pluralName === undefined) {
     pluralName = `${name}s`;
   }

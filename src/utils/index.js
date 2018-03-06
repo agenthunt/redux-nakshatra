@@ -9,9 +9,10 @@ export const httpMethodToCRUDName = {
 
 export function replacePathParamsByValue(url, pathParams) {
   let result = url;
-  Object.keys(pathParams).forEach(key => {
-    const regex = new RegExp(`:${key}`, 'gi');
-    result = result.replace(regex, pathParams[key]);
-  });
+  pathParams &&
+    Object.keys(pathParams).forEach(key => {
+      const regex = new RegExp(`:${key}`, 'gi');
+      result = result.replace(regex, pathParams[key]);
+    });
   return result;
 }
