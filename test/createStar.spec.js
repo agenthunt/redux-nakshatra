@@ -27,13 +27,7 @@ describe('createStar', () => {
         UPDATE_POST_SUCCESS: '@star/UPDATE_POST_SUCCESS'
       })
     );
-    expect(Object.keys(actions)).toEqual([
-      'getPost',
-      'getPosts',
-      'createPost',
-      'updatePost',
-      'deletePost'
-    ]);
+    expect(Object.keys(actions)).toEqual(['getPost', 'getPosts', 'createPost', 'updatePost', 'deletePost']);
 
     const initialState = { test: 'test' };
     expect(rootReducer(initialState, { type: 'unknown' })).toBe(initialState);
