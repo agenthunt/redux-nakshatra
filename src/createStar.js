@@ -49,7 +49,7 @@ export function createStar({
   } else {
     if (generateDefault === true) {
       if (name === undefined || name === null) {
-        throw new Error(`name cannot be null for StarType.${starType}`);
+        throw new Error(`name cannot be null for ${StarTypes[starType]}`);
       }
     } else {
       name = '';
