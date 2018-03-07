@@ -1,15 +1,6 @@
 import { ucfirst, httpMethodToCRUDName } from './utils/index';
 
-export default function createRootReducer({
-  name,
-  pluralName,
-  types,
-  starType,
-  moreInitialState,
-  generateDefault,
-  reducer,
-  add
-}) {
+export default function createRootReducer({ name, pluralName, types, starType, moreInitialState, generateDefault, reducer, add }) {
   const nameUpperCase = name.toUpperCase();
   const pluralNameUpperCase = pluralName.toUpperCase();
   const ucFirstName = ucfirst(name);
@@ -138,27 +129,21 @@ export default function createRootReducer({
       const ucFirstName = ucfirst(key);
       const actionName = httpMethodToCRUDName[addObj.method];
       const actionNameUpperCase = actionName.toUpperCase();
-      addReducers[
-        `@star/${actionNameUpperCase}_${nameUpperCase}_REQUEST`
-      ] = function(state, action) {
+      addReducers[`@star/${actionNameUpperCase}_${nameUpperCase}_REQUEST`] = function(state, action) {
         return {
           ...state,
           [`${actionName}${ucFirstName}InProgress`]: true,
           [`${actionName}${ucFirstName}FailureMessage`]: null
         };
       };
-      addReducers[
-        `@star/${actionNameUpperCase}_${nameUpperCase}_SUCCESS`
-      ] = function(state, action) {
+      addReducers[`@star/${actionNameUpperCase}_${nameUpperCase}_SUCCESS`] = function(state, action) {
         return {
           ...state,
           [`${actionName}${ucFirstName}InProgress`]: false,
           [key]: action.response
         };
       };
-      addReducers[
-        `@star/${actionNameUpperCase}_${nameUpperCase}_FAILURE`
-      ] = function(state, action) {
+      addReducers[`@star/${actionNameUpperCase}_${nameUpperCase}_FAILURE`] = function(state, action) {
         return {
           ...state,
           [`${actionName}${ucFirstName}InProgress`]: false,

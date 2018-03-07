@@ -1,14 +1,6 @@
 import { ucfirst, httpMethodToCRUDName } from './utils/index';
 
-export default function createActions({
-  name,
-  pluralName,
-  types,
-  starType,
-  generateDefault,
-  moreActions,
-  add
-}) {
+export default function createActions({ name, pluralName, types, starType, generateDefault, moreActions, add }) {
   const nameUpperCase = name.toUpperCase();
   const pluralNameUpperCase = pluralName.toUpperCase();
   const ucFirstName = ucfirst(name);

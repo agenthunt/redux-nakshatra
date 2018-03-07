@@ -1,12 +1,5 @@
 import { httpMethodToCRUDName } from './utils/index';
-export default function createTypes({
-  name,
-  pluralName,
-  starType,
-  generateDefault,
-  add,
-  moreTypes
-}) {
+export default function createTypes({ name, pluralName, starType, generateDefault, add, moreTypes }) {
   const nameUpperCase = name.toUpperCase();
   const pluralNameUpperCase = pluralName.toUpperCase();
   let defaultTypes = {};
@@ -44,15 +37,9 @@ export default function createTypes({
       const addObj = add[key];
       const nameUpperCase = key.toUpperCase();
       const actionName = httpMethodToCRUDName[addObj.method].toUpperCase();
-      addTypes[
-        `${actionName}_${nameUpperCase}_REQUEST`
-      ] = `@star/${actionName}_${nameUpperCase}_REQUEST`;
-      addTypes[
-        `${actionName}_${nameUpperCase}_SUCCESS`
-      ] = `@star/${actionName}_${nameUpperCase}_SUCCESS`;
-      addTypes[
-        `${actionName}_${nameUpperCase}_FAILURE`
-      ] = `@star/${actionName}_${nameUpperCase}_FAILURE`;
+      addTypes[`${actionName}_${nameUpperCase}_REQUEST`] = `@star/${actionName}_${nameUpperCase}_REQUEST`;
+      addTypes[`${actionName}_${nameUpperCase}_SUCCESS`] = `@star/${actionName}_${nameUpperCase}_SUCCESS`;
+      addTypes[`${actionName}_${nameUpperCase}_FAILURE`] = `@star/${actionName}_${nameUpperCase}_FAILURE`;
     });
   }
   return {
