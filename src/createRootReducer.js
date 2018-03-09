@@ -1,4 +1,5 @@
 import { ucfirst, httpMethodToCRUDName } from './utils/index';
+import StarTypes from './starTypes';
 
 export default function createRootReducer({ name, pluralName, types, starType, moreInitialState, generateDefault, reducer, add }) {
   const nameUpperCase = name.toUpperCase();
@@ -8,120 +9,189 @@ export default function createRootReducer({ name, pluralName, types, starType, m
 
   let initialState = {};
   let defaultReducers = {};
-  if (generateDefault) {
+  if (generateDefault && starType === StarTypes.REST) {
     initialState = {
-      items: [],
-      item: null
+      [`get${ucFirstName}`]: {
+        loading: false,
+        error: null,
+        data: null
+      },
+      [`get${ucFirstPluralName}`]: {
+        loading: false,
+        error: null,
+        data: null
+      },
+      [`create${ucFirstName}`]: {
+        loading: false,
+        error: null,
+        data: null
+      },
+      [`update${ucFirstName}`]: {
+        loading: false,
+        error: null,
+        data: null
+      },
+      [`delete${ucFirstName}`]: {
+        loading: false,
+        error: null,
+        data: null
+      }
     };
     defaultReducers = {
       [`@star/GET_${nameUpperCase}_REQUEST`]: function(state, action) {
         return {
           ...state,
-          [`get${ucFirstName}InProgress`]: true,
-          [`get${ucFirstName}FailureMessage`]: null
+          [`get${ucFirstName}`]: {
+            ...state[`get${ucFirstName}`],
+            loading: true,
+            error: null
+          }
         };
       },
       [`@star/GET_${nameUpperCase}_SUCCESS`]: function(state, action) {
         return {
           ...state,
-          [`get${ucFirstName}InProgress`]: false,
-          item: action.response
+          [`get${ucFirstName}`]: {
+            ...state[`get${ucFirstName}`],
+            loading: false,
+            data: action.response
+          }
         };
       },
       [`@star/GET_${nameUpperCase}_FAILURE`]: function(state, action) {
         return {
           ...state,
-          [`get${ucFirstName}InProgress`]: false,
-          [`get${ucFirstName}FailureMessage`]: action.response
+          [`get${ucFirstName}`]: {
+            ...state[`get${ucFirstName}`],
+            loading: false,
+            error: action.response
+          }
         };
       },
       [`@star/GET_${pluralNameUpperCase}_REQUEST`]: function(state, action) {
         return {
           ...state,
-          [`get${ucFirstPluralName}InProgress`]: true,
-          [`get${ucFirstPluralName}FailureMessage`]: null
+          [`get${ucFirstPluralName}`]: {
+            ...state[`get${ucFirstPluralName}`],
+            loading: true,
+            error: null
+          }
         };
       },
       [`@star/GET_${pluralNameUpperCase}_SUCCESS`]: function(state, action) {
         return {
           ...state,
-          [`get${ucFirstPluralName}InProgress`]: false,
-          items: action.response
+          [`get${ucFirstPluralName}`]: {
+            ...state[`get${ucFirstPluralName}`],
+            loading: true,
+            data: action.response
+          }
         };
       },
       [`@star/GET_${pluralNameUpperCase}_FAILURE`]: function(state, action) {
         return {
           ...state,
-          [`get${ucFirstPluralName}InProgress`]: false,
-          [`get${ucFirstPluralName}FailureMessage`]: action.response
+          [`get${ucFirstPluralName}`]: {
+            ...state[`get${ucFirstPluralName}`],
+            loading: true,
+            error: action.response
+          }
         };
       },
       [`@star/CREATE_${nameUpperCase}_REQUEST`]: function(state, action) {
         return {
           ...state,
-          [`create${ucFirstName}InProgress`]: true,
-          [`create${ucFirstName}FailureMessage`]: null
+          [`create${ucFirstName}`]: {
+            ...state[`get${ucFirstPluralName}`],
+            loading: true,
+            error: null
+          }
         };
       },
       [`@star/CREATE_${nameUpperCase}_SUCCESS`]: function(state, action) {
         return {
           ...state,
-          [`create${ucFirstName}InProgress`]: false,
-          lastCreatedItem: action.response
+          [`create${ucFirstName}`]: {
+            ...state[`create${ucFirstName}`],
+            loading: false,
+            data: action.response
+          }
         };
       },
       [`@star/CREATE_${nameUpperCase}_FAILURE`]: function(state, action) {
         return {
           ...state,
-          [`create${ucFirstName}InProgress`]: false,
-          [`create${ucFirstName}FailureMessage`]: action.response
+          [`create${ucFirstName}`]: {
+            ...state[`create${ucFirstName}`],
+            loading: false,
+            error: action.response
+          }
         };
       },
       [`@star/UPDATE_${nameUpperCase}_REQUEST`]: function(state, action) {
         return {
           ...state,
-          [`update${ucFirstName}InProgress`]: true,
-          [`update${ucFirstName}FailureMessage`]: null
+          [`update${ucFirstName}`]: {
+            ...state[`update${ucFirstName}`],
+            loading: true,
+            error: null
+          }
         };
       },
       [`@star/UPDATE_${nameUpperCase}_SUCCESS`]: function(state, action) {
         return {
           ...state,
-          [`update${ucFirstName}InProgress`]: false,
-          lastUpdatedItem: action.response
+          [`update${ucFirstName}`]: {
+            ...state[`update${ucFirstName}`],
+            loading: true,
+            data: action.response
+          }
         };
       },
       [`@star/UPDATE_${nameUpperCase}_FAILURE`]: function(state, action) {
         return {
           ...state,
-          [`update${ucFirstName}InProgress`]: false,
-          [`update${ucFirstName}FailureMessage`]: action.response
+          [`update${ucFirstName}`]: {
+            ...state[`update${ucFirstName}`],
+            loading: false,
+            error: action.response
+          }
         };
       },
       [`@star/DELETE_${nameUpperCase}_REQUEST`]: function(state, action) {
         return {
           ...state,
-          [`delete${ucFirstName}InProgress`]: true,
-          [`delete${ucFirstName}FailureMessage`]: null
+          [`delete${ucFirstName}`]: {
+            ...state[`delete${ucFirstName}`],
+            loading: true,
+            error: null
+          }
         };
       },
       [`@star/DELETE_${nameUpperCase}_SUCCESS`]: function(state, action) {
         return {
           ...state,
-          [`delete${ucFirstName}InProgress`]: false,
-          lastDeletedItem: action.response
+          [`delete${ucFirstName}`]: {
+            ...state[`delete${ucFirstName}`],
+            loading: false,
+            data: action.response
+          }
         };
       },
       [`@star/DELETE_${nameUpperCase}_FAILURE`]: function(state, action) {
         return {
           ...state,
-          [`delete${ucFirstName}InProgress`]: false,
-          [`delete${ucFirstName}FailureMessage`]: action.response
+          [`delete${ucFirstName}`]: {
+            ...state[`delete${ucFirstName}`],
+            loading: false,
+            error: action.response
+          }
         };
       }
     };
   }
   let addReducers = {};
+  let addInitialState = {};
   add &&
     Object.keys(add).forEach(key => {
       const addObj = add[key];
@@ -129,25 +199,40 @@ export default function createRootReducer({ name, pluralName, types, starType, m
       const ucFirstName = ucfirst(key);
       const actionName = httpMethodToCRUDName[addObj.method];
       const actionNameUpperCase = actionName.toUpperCase();
+
+      addInitialState[`${actionName}${ucFirstName}`] = {
+        loading: false,
+        error: null,
+        data: null
+      };
       addReducers[`@star/${actionNameUpperCase}_${nameUpperCase}_REQUEST`] = function(state, action) {
         return {
           ...state,
-          [`${actionName}${ucFirstName}InProgress`]: true,
-          [`${actionName}${ucFirstName}FailureMessage`]: null
+          [`${actionName}${ucFirstName}`]: {
+            ...state[`${actionName}${ucFirstName}`],
+            loading: true,
+            error: null
+          }
         };
       };
       addReducers[`@star/${actionNameUpperCase}_${nameUpperCase}_SUCCESS`] = function(state, action) {
         return {
           ...state,
-          [`${actionName}${ucFirstName}InProgress`]: false,
-          [key]: action.response
+          [`${actionName}${ucFirstName}`]: {
+            ...state[`${actionName}${ucFirstName}`],
+            loading: false,
+            data: action.response
+          }
         };
       };
       addReducers[`@star/${actionNameUpperCase}_${nameUpperCase}_FAILURE`] = function(state, action) {
         return {
           ...state,
-          [`${actionName}${ucFirstName}InProgress`]: false,
-          [`${actionName}${ucFirstName}FailureMessage`]: action.response
+          [`${actionName}${ucFirstName}`]: {
+            ...state[`${actionName}${ucFirstName}`],
+            loading: false,
+            error: action.response
+          }
         };
       };
     });
@@ -158,6 +243,7 @@ export default function createRootReducer({ name, pluralName, types, starType, m
 
   initialState = {
     ...initialState,
+    ...addInitialState,
     ...moreInitialState
   };
   function rootReducer(state = initialState, action) {
@@ -168,6 +254,7 @@ export default function createRootReducer({ name, pluralName, types, starType, m
       newState = selectedReducer(state, action);
     }
 
+    // custom reducer by the user provided createStar() config
     if (reducer) {
       newState = reducer(newState, action);
     }

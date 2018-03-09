@@ -1,4 +1,5 @@
 import { ucfirst, httpMethodToCRUDName } from './utils/index';
+import StarTypes from './starTypes';
 
 export default function createActions({ name, pluralName, types, starType, generateDefault, moreActions, add }) {
   const nameUpperCase = name.toUpperCase();
@@ -6,7 +7,7 @@ export default function createActions({ name, pluralName, types, starType, gener
   const ucFirstName = ucfirst(name);
   const ucFirstPluralName = ucfirst(pluralName);
   let defaultActions = {};
-  if (generateDefault) {
+  if (generateDefault && starType === StarTypes.REST) {
     defaultActions = {
       [`get${ucFirstName}`]: function(obj) {
         return {
@@ -57,7 +58,7 @@ export default function createActions({ name, pluralName, types, starType, gener
     });
   return {
     ...defaultActions,
-    ...moreActions,
-    ...addActions
+    ...addActions,
+    ...moreActions
   };
 }

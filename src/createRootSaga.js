@@ -2,6 +2,7 @@ import { ucfirst, httpMethodToCRUDName, replacePathParamsByValue } from './utils
 import { take, call, put, all, fork } from 'redux-saga/effects';
 import axios from 'axios';
 import idx from 'idx';
+import StarTypes from './starTypes';
 
 export default function createSagas({ name, pluralName, types, url, override, starType, generateDefault, log, moreSagas, add }) {
   const nameUpperCase = name.toUpperCase();
@@ -10,7 +11,7 @@ export default function createSagas({ name, pluralName, types, url, override, st
   const ucFirstPluralName = ucfirst(pluralName);
 
   let defaultSagas = {};
-  if (generateDefault) {
+  if (generateDefault && starType === StarTypes.REST) {
     defaultSagas = {
       *[`watchGet${ucFirstPluralName}RequestSaga`]() {
         while (true) {

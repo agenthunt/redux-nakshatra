@@ -61,22 +61,20 @@ class PostsDetailedView extends Component {
   }
 
   render() {
-    if (!this.props.posts.item || !this.props.posts.item.data) {
+    const { data, loading, error } = this.props.posts.getPost;
+    if ((loading || data === null) && error === null) {
       return <ActivityIndicator size="large" />;
     }
-    const { data } = this.props.posts.item;
+
     return (
       <View style={[styles.container]}>
         <Text> POSTS DETAILED VIEW </Text>
-        <Image
-          source={{ uri: data.image, width: 600, height: 400 }}
-          style={styles.image}
-        />
+        <Image source={{ uri: data.data.image, width: 600, height: 400 }} style={styles.image} />
         <Text numberOfLines={1} style={styles.title}>
-          {data.title}
+          {data.data.title}
         </Text>
         <Text numberOfLines={1} style={styles.author}>
-          {data.author}
+          {data.data.author}
         </Text>
         <Text style={styles.description}>{data.long_description}</Text>
       </View>

@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Image,
-  Button,
-  ActivityIndicator
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Button, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import * as Posts from '../stars/posts';
 import { bindActionCreators } from 'redux';
@@ -109,15 +101,9 @@ class PostsView extends Component {
   };
   renderItem = (item, index, array) => {
     return (
-      <TouchableOpacity
-        key={index}
-        onPress={() => this.goToDetailsView(item.id)}
-      >
+      <TouchableOpacity key={index} onPress={() => this.goToDetailsView(item.id)}>
         <View style={[styles.itemContainer, CommonStyles.card]}>
-          <Image
-            source={{ uri: item.image, width: 320, height: 320 }}
-            style={styles.image}
-          />
+          <Image source={{ uri: item.image, width: 320, height: 320 }} style={styles.image} />
           <View style={styles.section}>
             <View style={styles.backgroundContainer}>
               <Text numberOfLines={1} style={styles.title}>
@@ -131,10 +117,7 @@ class PostsView extends Component {
           <View style={styles.deleteUpdateContainer}>
             <Button title="Update" onPress={() => this.updatePost(item)} />
             <TouchableOpacity onPress={() => this.deletePost(item)}>
-              <Image
-                source={require('../images/delete_white_48x48.png')}
-                style={{ width: 36, height: 36 }}
-              />
+              <Image source={require('../images/delete_white_48x48.png')} style={{ width: 36, height: 36 }} />
             </TouchableOpacity>
           </View>
         </View>
@@ -142,11 +125,11 @@ class PostsView extends Component {
     );
   };
   render() {
+    const { data, loading, error } = this.props.getPosts;
     return (
       <View style={[styles.container, this.props.style]}>
         <Text> POSTS VIEW </Text>
-        {this.props.posts.items.data &&
-          this.props.posts.items.data.map(this.renderItem)}
+        {data && data.data && data.data.map(this.renderItem)}
       </View>
     );
   }
@@ -154,17 +137,13 @@ class PostsView extends Component {
 
 const mapStateToProps = state => {
   return {
-    posts: state.posts,
-    navigation: state.navigation
+    getPosts: state.posts.getPosts
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    actions: bindActionCreators(
-      { ...Posts.actions, ...Navigation.actions },
-      dispatch
-    )
+    actions: bindActionCreators({ ...Posts.actions, ...Navigation.actions }, dispatch)
   };
 };
 

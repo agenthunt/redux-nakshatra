@@ -108,11 +108,11 @@ class PostsView extends Component {
     );
   }
   render() {
+    const { loading, error, data } = this.props;
     return (
       <View style={[styles.container, this.props.style]}>
         {this.renderItem({ title: 'Title', author: 'Author' }, -1)}
-        {this.props.posts.items.data &&
-          this.props.posts.items.data.map(this.renderItem)}
+        {data && data.map(this.renderItem)}
       </View>
     );
   }
@@ -120,7 +120,7 @@ class PostsView extends Component {
 
 const mapStateToProps = state => {
   return {
-    posts: state.posts
+    ...state.posts.getPosts
   };
 };
 

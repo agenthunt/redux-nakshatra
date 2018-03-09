@@ -1,9 +1,11 @@
 import { httpMethodToCRUDName } from './utils/index';
+import StarTypes from './starTypes';
+
 export default function createTypes({ name, pluralName, starType, generateDefault, add, moreTypes }) {
   const nameUpperCase = name.toUpperCase();
   const pluralNameUpperCase = pluralName.toUpperCase();
   let defaultTypes = {};
-  if (generateDefault) {
+  if (generateDefault && starType === StarTypes.REST) {
     defaultTypes = {
       // GET one item
       [`GET_${nameUpperCase}_REQUEST`]: `@star/GET_${nameUpperCase}_REQUEST`,
