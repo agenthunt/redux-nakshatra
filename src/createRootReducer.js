@@ -1,4 +1,4 @@
-import { ucfirst, httpMethodToCRUDName } from './utils/index';
+import { ucfirst } from './utils/index';
 import StarTypes from './starTypes';
 
 export default function createRootReducer({ name, pluralName, types, starType, moreInitialState, generateDefault, reducer, add }) {
@@ -21,12 +21,17 @@ export default function createRootReducer({ name, pluralName, types, starType, m
         error: null,
         data: null
       },
-      [`create${ucFirstName}`]: {
+      [`post${ucFirstName}`]: {
         loading: false,
         error: null,
         data: null
       },
-      [`update${ucFirstName}`]: {
+      [`put${ucFirstName}`]: {
+        loading: false,
+        error: null,
+        data: null
+      },
+      [`patch${ucFirstName}`]: {
         loading: false,
         error: null,
         data: null
@@ -98,61 +103,91 @@ export default function createRootReducer({ name, pluralName, types, starType, m
           }
         };
       },
-      [`@star/CREATE_${nameUpperCase}_REQUEST`]: function(state, action) {
+      [`@star/POST_${nameUpperCase}_REQUEST`]: function(state, action) {
         return {
           ...state,
-          [`create${ucFirstName}`]: {
+          [`post${ucFirstName}`]: {
             ...state[`get${ucFirstPluralName}`],
             loading: true,
             error: null
           }
         };
       },
-      [`@star/CREATE_${nameUpperCase}_SUCCESS`]: function(state, action) {
+      [`@star/POST_${nameUpperCase}_SUCCESS`]: function(state, action) {
         return {
           ...state,
-          [`create${ucFirstName}`]: {
-            ...state[`create${ucFirstName}`],
+          [`post${ucFirstName}`]: {
+            ...state[`post${ucFirstName}`],
             loading: false,
             data: action.response
           }
         };
       },
-      [`@star/CREATE_${nameUpperCase}_FAILURE`]: function(state, action) {
+      [`@star/POST_${nameUpperCase}_FAILURE`]: function(state, action) {
         return {
           ...state,
-          [`create${ucFirstName}`]: {
-            ...state[`create${ucFirstName}`],
+          [`post${ucFirstName}`]: {
+            ...state[`post${ucFirstName}`],
             loading: false,
             error: action.response
           }
         };
       },
-      [`@star/UPDATE_${nameUpperCase}_REQUEST`]: function(state, action) {
+      [`@star/PUT_${nameUpperCase}_REQUEST`]: function(state, action) {
         return {
           ...state,
-          [`update${ucFirstName}`]: {
-            ...state[`update${ucFirstName}`],
+          [`put${ucFirstName}`]: {
+            ...state[`put${ucFirstName}`],
             loading: true,
             error: null
           }
         };
       },
-      [`@star/UPDATE_${nameUpperCase}_SUCCESS`]: function(state, action) {
+      [`@star/PUT_${nameUpperCase}_SUCCESS`]: function(state, action) {
         return {
           ...state,
-          [`update${ucFirstName}`]: {
-            ...state[`update${ucFirstName}`],
+          [`put${ucFirstName}`]: {
+            ...state[`put${ucFirstName}`],
             loading: true,
             data: action.response
           }
         };
       },
-      [`@star/UPDATE_${nameUpperCase}_FAILURE`]: function(state, action) {
+      [`@star/PUT_${nameUpperCase}_FAILURE`]: function(state, action) {
         return {
           ...state,
-          [`update${ucFirstName}`]: {
-            ...state[`update${ucFirstName}`],
+          [`put${ucFirstName}`]: {
+            ...state[`put${ucFirstName}`],
+            loading: false,
+            error: action.response
+          }
+        };
+      },
+      [`@star/PATCH_${nameUpperCase}_REQUEST`]: function(state, action) {
+        return {
+          ...state,
+          [`patch${ucFirstName}`]: {
+            ...state[`patch${ucFirstName}`],
+            loading: true,
+            error: null
+          }
+        };
+      },
+      [`@star/PATCH_${nameUpperCase}_SUCCESS`]: function(state, action) {
+        return {
+          ...state,
+          [`patch${ucFirstName}`]: {
+            ...state[`patch${ucFirstName}`],
+            loading: true,
+            data: action.response
+          }
+        };
+      },
+      [`@star/PATCH_${nameUpperCase}_FAILURE`]: function(state, action) {
+        return {
+          ...state,
+          [`patch${ucFirstName}`]: {
+            ...state[`patch${ucFirstName}`],
             loading: false,
             error: action.response
           }
@@ -197,7 +232,7 @@ export default function createRootReducer({ name, pluralName, types, starType, m
       const addObj = add[key];
       const nameUpperCase = key.toUpperCase();
       const ucFirstName = ucfirst(key);
-      const actionName = httpMethodToCRUDName[addObj.method];
+      const actionName = addObj.method;
       const actionNameUpperCase = actionName.toUpperCase();
 
       addInitialState[`${actionName}${ucFirstName}`] = {

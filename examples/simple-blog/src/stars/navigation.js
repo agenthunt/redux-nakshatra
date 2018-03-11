@@ -16,7 +16,7 @@ export const { types, actions, rootReducer, rootSaga } = createStar({
   },
   initialState: {
     route: {
-      id: 'postsView'
+      id: 'blogItemsScreen'
     }
   },
   reducer(state, action) {

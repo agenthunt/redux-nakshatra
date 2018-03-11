@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, ActivityIndicator } from 'react-native';
-import * as Posts from '../stars/posts';
+import * as BlogItems from '../stars/blogItems';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CommonStyles from '../styles/commonStyles';
@@ -51,9 +51,9 @@ const styles = StyleSheet.create({
   image: {}
 });
 
-class PostsDetailedView extends Component {
+class BlogItemsDetailedScreen extends Component {
   componentDidMount() {
-    this.props.actions.getPost({
+    this.props.actions.getBlogItem({
       pathParams: {
         id: this.props.params.id
       }
@@ -68,7 +68,6 @@ class PostsDetailedView extends Component {
 
     return (
       <View style={[styles.container]}>
-        <Text> POSTS DETAILED VIEW </Text>
         <Image source={{ uri: data.data.image, width: 600, height: 400 }} style={styles.image} />
         <Text numberOfLines={1} style={styles.title}>
           {data.data.title}
@@ -84,14 +83,14 @@ class PostsDetailedView extends Component {
 
 const mapStateToProps = state => {
   return {
-    posts: state.posts
+    blogItems: state.blogItems
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    actions: bindActionCreators({ ...Posts.actions }, dispatch)
+    actions: bindActionCreators({ ...BlogItems.actions }, dispatch)
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostsDetailedView);
+export default connect(mapStateToProps, mapDispatchToProps)(BlogItemsDetailedScreen);

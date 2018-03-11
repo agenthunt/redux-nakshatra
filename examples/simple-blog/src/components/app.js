@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import PostsView from './postsView';
-import PostsDetailedView from './postsDetailedView';
+import BlogItemsScreen from './blogItemsScreen';
+import BlogItemsDetailedScreen from './blogItemsDetailedScreen';
 import NavigationBar from './navigationBar';
 import { connect } from 'react-redux';
 import * as Navigation from '../stars/navigation';
@@ -17,16 +17,16 @@ class App extends Component {
   renderContent() {
     const { route } = this.props.navigation;
     switch (route && route.id) {
-      case 'postsView':
+      case 'blogItemsScreen':
         return (
           <ScrollView>
-            <PostsView />
+            <BlogItemsScreen />
           </ScrollView>
         );
-      case 'postsDetailedView':
+      case 'blogItemsDetailedScreen':
         return (
           <ScrollView>
-            <PostsDetailedView params={route.params} />
+            <BlogItemsDetailedScreen params={route.params} />
           </ScrollView>
         );
       default:

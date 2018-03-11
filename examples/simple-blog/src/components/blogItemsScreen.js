@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, Button, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
-import * as Posts from '../stars/posts';
+import * as BlogItems from '../stars/blogItems';
 import { bindActionCreators } from 'redux';
 import CommonStyles from '../styles/commonStyles';
 import faker from 'faker';
@@ -67,33 +67,33 @@ const styles = StyleSheet.create({
   }
 });
 
-class PostsView extends Component {
+class BlogItemsScreen extends Component {
   componentDidMount() {
-    this.props.actions.getPosts();
+    this.props.actions.getBlogItems();
   }
   deletePost = item => {
-    this.props.actions.deletePost({
-      url: `http://localhost:5000/posts/${item.id}`
+    this.props.actions.deleteBlogItem({
+      url: `http://localhost:5000/blogitems/${item.id}`
     });
   };
 
-  updatePost = item => {
-    this.props.actions.updatePost({
-      url: `http://localhost:5000/posts/${item.id}`,
+  patchBlogItem = item => {
+    this.props.actions.patchBlogItem({
+      url: `http://localhost:5000/blogitems/${item.id}`,
       data: {
         title: faker.lorem.words(),
         author: faker.name.findName(),
         author_image: faker.image.avatar(),
         release_date: faker.date.recent(),
-        image: `${faker.image.nature()}/${this.props.posts.items.length}`,
+        image: `${faker.image.nature()}/${this.props.getBlogItems.data.data.length}`,
         short_description: faker.lorem.sentence(),
         long_description: faker.lorem.paragraphs()
       }
     });
   };
-  goToDetailsView = id => {
+  goToDetailsScreen = id => {
     this.props.actions.navigateTo({
-      id: 'postsDetailedView',
+      id: 'blogItemsDetailedScreen',
       params: {
         id
       }
@@ -101,7 +101,7 @@ class PostsView extends Component {
   };
   renderItem = (item, index, array) => {
     return (
-      <TouchableOpacity key={index} onPress={() => this.goToDetailsView(item.id)}>
+      <TouchableOpacity key={index} onPress={() => this.goToDetailsScreen(item.id)}>
         <View style={[styles.itemContainer, CommonStyles.card]}>
           <Image source={{ uri: item.image, width: 320, height: 320 }} style={styles.image} />
           <View style={styles.section}>
@@ -115,7 +115,7 @@ class PostsView extends Component {
             </View>
           </View>
           <View style={styles.deleteUpdateContainer}>
-            <Button title="Update" onPress={() => this.updatePost(item)} />
+            <Button title="Update" onPress={() => this.patchBlogItem(item)} />
             <TouchableOpacity onPress={() => this.deletePost(item)}>
               <Image source={require('../images/delete_white_48x48.png')} style={{ width: 36, height: 36 }} />
             </TouchableOpacity>
@@ -125,26 +125,21 @@ class PostsView extends Component {
     );
   };
   render() {
-    const { data, loading, error } = this.props.getPosts;
-    return (
-      <View style={[styles.container, this.props.style]}>
-        <Text> POSTS VIEW </Text>
-        {data && data.data && data.data.map(this.renderItem)}
-      </View>
-    );
+    const { data, loading, error } = this.props.getBlogItems;
+    return <View style={[styles.container, this.props.style]}>{data && data.data && data.data.map(this.renderItem)}</View>;
   }
 }
 
 const mapStateToProps = state => {
   return {
-    getPosts: state.posts.getPosts
+    getBlogItems: state.blogItems.getBlogItems
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    actions: bindActionCreators({ ...Posts.actions, ...Navigation.actions }, dispatch)
+    actions: bindActionCreators({ ...BlogItems.actions, ...Navigation.actions }, dispatch)
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostsView);
+export default connect(mapStateToProps, mapDispatchToProps)(BlogItemsScreen);

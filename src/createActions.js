@@ -1,4 +1,4 @@
-import { ucfirst, httpMethodToCRUDName } from './utils/index';
+import { ucfirst } from './utils/index';
 import StarTypes from './starTypes';
 
 export default function createActions({ name, pluralName, types, starType, generateDefault, moreActions, add }) {
@@ -21,15 +21,21 @@ export default function createActions({ name, pluralName, types, starType, gener
           obj
         };
       },
-      [`create${ucFirstName}`]: function(obj) {
+      [`post${ucFirstName}`]: function(obj) {
         return {
-          type: types[`CREATE_${nameUpperCase}_REQUEST`],
+          type: types[`POST_${nameUpperCase}_REQUEST`],
           obj
         };
       },
-      [`update${ucFirstName}`]: function(obj) {
+      [`put${ucFirstName}`]: function(obj) {
         return {
-          type: types[`UPDATE_${nameUpperCase}_REQUEST`],
+          type: types[`PUT_${nameUpperCase}_REQUEST`],
+          obj
+        };
+      },
+      [`patch${ucFirstName}`]: function(obj) {
+        return {
+          type: types[`PATCH_${nameUpperCase}_REQUEST`],
           obj
         };
       },
@@ -47,7 +53,7 @@ export default function createActions({ name, pluralName, types, starType, gener
       const addObj = add[key];
       const nameUpperCase = key.toUpperCase();
       const ucFirstName = ucfirst(key);
-      const actionName = httpMethodToCRUDName[addObj.method];
+      const actionName = addObj.method;
       const actionNameUpperCase = actionName.toUpperCase();
       addActions[`${actionName}${ucFirstName}`] = function(obj) {
         return {
