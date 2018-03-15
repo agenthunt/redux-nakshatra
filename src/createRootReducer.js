@@ -2,14 +2,12 @@ export default function createRootReducer({ types, combinedObjs, moreInitialStat
   let combinedReducers = {};
   let combinedInitialState = {};
   Object.keys(combinedObjs).forEach(key => {
-    const nameUpperCase = key.toUpperCase();
-
     combinedInitialState[key] = {
       loading: false,
       error: null,
       data: null
     };
-    combinedReducers[`@star/${nameUpperCase}_REQUEST`] = function(state, action) {
+    combinedReducers[types[`${key}_REQUEST`]] = function(state, action) {
       return {
         ...state,
         [key]: {
@@ -19,7 +17,7 @@ export default function createRootReducer({ types, combinedObjs, moreInitialStat
         }
       };
     };
-    combinedReducers[`@star/${nameUpperCase}_SUCCESS`] = function(state, action) {
+    combinedReducers[types[`${key}_SUCCESS`]] = function(state, action) {
       return {
         ...state,
         [key]: {
@@ -29,7 +27,7 @@ export default function createRootReducer({ types, combinedObjs, moreInitialStat
         }
       };
     };
-    combinedReducers[`@star/${nameUpperCase}_FAILURE`] = function(state, action) {
+    combinedReducers[types[`${key}_FAILURE`]] = function(state, action) {
       return {
         ...state,
         [key]: {

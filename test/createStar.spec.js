@@ -1,4 +1,4 @@
-import { createStar, StarTypes } from '../';
+import { createStar } from '../';
 import { take } from 'redux-saga/effects';
 
 describe('createStar', () => {
@@ -6,30 +6,31 @@ describe('createStar', () => {
     const { types, actions, rootReducer, rootSaga } = createStar({
       name: 'blogItem',
       http: {
+        generateDefault: true,
         url: 'http://localhost:5000/blogitems'
       }
     });
 
     expect(types).toEqual(
       expect.objectContaining({
-        POSTBLOGITEM_FAILURE: '@star/POSTBLOGITEM_FAILURE',
-        POSTBLOGITEM_REQUEST: '@star/POSTBLOGITEM_REQUEST',
-        POSTBLOGITEM_SUCCESS: '@star/POSTBLOGITEM_SUCCESS',
-        DELETEBLOGITEM_FAILURE: '@star/DELETEBLOGITEM_FAILURE',
-        DELETEBLOGITEM_REQUEST: '@star/DELETEBLOGITEM_REQUEST',
-        DELETEBLOGITEM_SUCCESS: '@star/DELETEBLOGITEM_SUCCESS',
-        GETBLOGITEMS_FAILURE: '@star/GETBLOGITEMS_FAILURE',
-        GETBLOGITEMS_REQUEST: '@star/GETBLOGITEMS_REQUEST',
-        GETBLOGITEMS_SUCCESS: '@star/GETBLOGITEMS_SUCCESS',
-        GETBLOGITEM_FAILURE: '@star/GETBLOGITEM_FAILURE',
-        GETBLOGITEM_REQUEST: '@star/GETBLOGITEM_REQUEST',
-        GETBLOGITEM_SUCCESS: '@star/GETBLOGITEM_SUCCESS',
-        PUTBLOGITEM_FAILURE: '@star/PUTBLOGITEM_FAILURE',
-        PUTBLOGITEM_REQUEST: '@star/PUTBLOGITEM_REQUEST',
-        PUTBLOGITEM_SUCCESS: '@star/PUTBLOGITEM_SUCCESS',
-        PATCHBLOGITEM_FAILURE: '@star/PATCHBLOGITEM_FAILURE',
-        PATCHBLOGITEM_REQUEST: '@star/PATCHBLOGITEM_REQUEST',
-        PATCHBLOGITEM_SUCCESS: '@star/PATCHBLOGITEM_SUCCESS'
+        postBlogItem_FAILURE: '@star/blogItem/postBlogItem_FAILURE',
+        postBlogItem_REQUEST: '@star/blogItem/postBlogItem_REQUEST',
+        postBlogItem_SUCCESS: '@star/blogItem/postBlogItem_SUCCESS',
+        deleteBlogItem_FAILURE: '@star/blogItem/deleteBlogItem_FAILURE',
+        deleteBlogItem_REQUEST: '@star/blogItem/deleteBlogItem_REQUEST',
+        deleteBlogItem_SUCCESS: '@star/blogItem/deleteBlogItem_SUCCESS',
+        getBlogItems_FAILURE: '@star/blogItem/getBlogItems_FAILURE',
+        getBlogItems_REQUEST: '@star/blogItem/getBlogItems_REQUEST',
+        getBlogItems_SUCCESS: '@star/blogItem/getBlogItems_SUCCESS',
+        getBlogItem_FAILURE: '@star/blogItem/getBlogItem_FAILURE',
+        getBlogItem_REQUEST: '@star/blogItem/getBlogItem_REQUEST',
+        getBlogItem_SUCCESS: '@star/blogItem/getBlogItem_SUCCESS',
+        putBlogItem_FAILURE: '@star/blogItem/putBlogItem_FAILURE',
+        putBlogItem_REQUEST: '@star/blogItem/putBlogItem_REQUEST',
+        putBlogItem_SUCCESS: '@star/blogItem/putBlogItem_SUCCESS',
+        patchBlogItem_FAILURE: '@star/blogItem/patchBlogItem_FAILURE',
+        patchBlogItem_REQUEST: '@star/blogItem/patchBlogItem_REQUEST',
+        patchBlogItem_SUCCESS: '@star/blogItem/patchBlogItem_SUCCESS'
       })
     );
     expect(Object.keys(actions)).toEqual(['getBlogItem', 'getBlogItems', 'postBlogItem', 'patchBlogItem', 'putBlogItem', 'deleteBlogItem']);

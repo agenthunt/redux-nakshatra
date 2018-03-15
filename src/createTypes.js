@@ -1,10 +1,9 @@
-export default function createTypes({ combinedObjs, moreTypes }) {
+export default function createTypes({ name, combinedObjs, moreTypes }) {
   let combinedTypes = {};
   Object.keys(combinedObjs).forEach(key => {
-    const nameUpperCase = key.toUpperCase();
-    combinedTypes[`${nameUpperCase}_REQUEST`] = `@star/${nameUpperCase}_REQUEST`;
-    combinedTypes[`${nameUpperCase}_SUCCESS`] = `@star/${nameUpperCase}_SUCCESS`;
-    combinedTypes[`${nameUpperCase}_FAILURE`] = `@star/${nameUpperCase}_FAILURE`;
+    combinedTypes[`${key}_REQUEST`] = `@star/${name}/${key}_REQUEST`;
+    combinedTypes[`${key}_SUCCESS`] = `@star/${name}/${key}_SUCCESS`;
+    combinedTypes[`${key}_FAILURE`] = `@star/${name}/${key}_FAILURE`;
   });
 
   return {

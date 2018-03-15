@@ -10,13 +10,12 @@ export default function createSagas({ types, combinedObjs, log, moreSagas }) {
   Object.keys(combinedObjs).forEach(key => {
     const obj = combinedObjs[key];
     const ucFirstKey = ucfirst(key);
-    const nameUpperCase = key.toUpperCase();
     if (obj.saga) {
       combinedSagas[`watch${ucFirstKey}RequestSaga`] = obj.saga;
     } else {
       combinedSagas[`watch${ucFirstKey}RequestSaga`] = function*() {
         while (true) {
-          const request = yield take(types[`${nameUpperCase}_REQUEST`]);
+          const request = yield take(types[`${key}_REQUEST`]);
 
           const pathParams = idx(request, _ => _.obj.pathParams);
           let finalizedUrl = obj.url; // use url value the createStar configuration
@@ -61,13 +60,13 @@ export default function createSagas({ types, combinedObjs, log, moreSagas }) {
               throw result;
             }
             yield put({
-              type: types[`${nameUpperCase}_SUCCESS`],
+              type: types[`${key}_SUCCESS`],
               response: result
             });
           } catch (error) {
             log && console.error(error);
             yield put({
-              type: types[`${nameUpperCase}_FAILURE`],
+              type: types[`${key}_FAILURE`],
               response: error
             });
           }

@@ -52,33 +52,34 @@ export function createStar({
   let customObjs = {};
 
   if (http) {
-    defaultHttpObjs = {
-      [`get${ucFirstName}`]: {
-        url: (http.override && http.override[`get${ucFirstName}`].url) || `${http.url}/:id`,
-        method: (http.override && http.override[`get${ucFirstName}`].method) || 'get'
-      },
-      [`get${ucFirstName}s`]: {
-        url: (http.override && http.override[`get${ucFirstName}s`].url) || http.url,
-        method: (http.override && http.override[`get${ucFirstName}s`].method) || 'get'
-      },
-      [`post${ucFirstName}`]: {
-        url: (http.override && http.override[`post${ucFirstName}`].url) || http.url,
-        method: (http.override && http.override[`post${ucFirstName}`].method) || 'post'
-      },
-      [`patch${ucFirstName}`]: {
-        url: (http.override && http.override[`patch${ucFirstName}`].url) || `${http.url}/:id`,
-        method: (http.override && http.override[`patch${ucFirstName}`].method) || 'patch'
-      },
-      [`put${ucFirstName}`]: {
-        url: (http.override && http.override[`put${ucFirstName}`].url) || `${http.url}/:id`,
-        method: (http.override && http.override[`put${ucFirstName}`].method) || 'put'
-      },
-      [`delete${ucFirstName}`]: {
-        url: (http.override && http.override[`delete${ucFirstName}`].url) || `${http.url}/:id`,
-        method: (http.override && http.override[`delete${ucFirstName}`].method) || 'delete'
-      }
-    };
-
+    if (http.generateDefault) {
+      defaultHttpObjs = {
+        [`get${ucFirstName}`]: {
+          url: (http.override && http.override[`get${ucFirstName}`].url) || `${http.url}/:id`,
+          method: (http.override && http.override[`get${ucFirstName}`].method) || 'get'
+        },
+        [`get${ucFirstName}s`]: {
+          url: (http.override && http.override[`get${ucFirstName}s`].url) || http.url,
+          method: (http.override && http.override[`get${ucFirstName}s`].method) || 'get'
+        },
+        [`post${ucFirstName}`]: {
+          url: (http.override && http.override[`post${ucFirstName}`].url) || http.url,
+          method: (http.override && http.override[`post${ucFirstName}`].method) || 'post'
+        },
+        [`patch${ucFirstName}`]: {
+          url: (http.override && http.override[`patch${ucFirstName}`].url) || `${http.url}/:id`,
+          method: (http.override && http.override[`patch${ucFirstName}`].method) || 'patch'
+        },
+        [`put${ucFirstName}`]: {
+          url: (http.override && http.override[`put${ucFirstName}`].url) || `${http.url}/:id`,
+          method: (http.override && http.override[`put${ucFirstName}`].method) || 'put'
+        },
+        [`delete${ucFirstName}`]: {
+          url: (http.override && http.override[`delete${ucFirstName}`].url) || `${http.url}/:id`,
+          method: (http.override && http.override[`delete${ucFirstName}`].method) || 'delete'
+        }
+      };
+    }
     if (http.add) {
       addHttpObjs = {
         ...http.add
@@ -97,6 +98,7 @@ export function createStar({
   };
 
   const types = createTypes({
+    name,
     combinedObjs,
     moreTypes
   });
