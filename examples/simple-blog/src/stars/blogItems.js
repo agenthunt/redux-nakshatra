@@ -1,15 +1,17 @@
-import { createStar, StarTypes } from 'redux-nakshatra';
+import { createStar } from 'redux-nakshatra';
 import { take, put } from 'redux-saga/effects';
 
 const blogItemStar = createStar({
   name: 'blogItem',
-  url: 'http://localhost:5000/blogitems',
+  http: {
+    url: 'http://localhost:5000/blogitems'
+  },
   types: {
     UPDATE_STATE_AFTER_PATCH_BLOGITEM_SUCCESS: 'UPDATE_STATE_AFTER_PATCH_BLOGITEM_SUCCESS'
   },
   reducer: function(state, action) {
     switch (action.type) {
-      case '@star/PATCH_BLOGITEM_SUCCESS': {
+      case '@star/PATCHBLOGITEM_SUCCESS': {
         const updatedIndex = state.getBlogItems.data.data.findIndex(obj => action.response.data.id === obj.id);
         state.getBlogItems.data.data[updatedIndex] = action.response.data;
         state.getBlogItems.data.data = [...state.getBlogItems.data.data];
@@ -28,10 +30,10 @@ const blogItemStar = createStar({
   sagas: {
     *watchDeleteBlogItemSuccess() {
       while (true) {
-        yield take('@star/DELETE_BLOGITEM_SUCCESS');
+        yield take('@star/DELETEBLOGITEM_SUCCESS');
         try {
           yield put({
-            type: '@star/GET_BLOGITEMS_REQUEST'
+            type: '@star/GETBLOGITEMS_REQUEST'
           });
         } catch (error) {
           yield put({
@@ -45,14 +47,14 @@ const blogItemStar = createStar({
 });
 
 export const CustomStar = createStar({
-  starType: StarTypes.CUSTOM,
+  name: 'customStar',
   sagas: {
     *watchPostBlogItemSuccessRequestSaga() {
       while (true) {
-        yield take(blogItemStar.types.POST_BLOGITEM_SUCCESS);
+        yield take(blogItemStar.types.POSTBLOGITEM_SUCCESS);
         try {
           yield put({
-            type: blogItemStar.types.GET_BLOGITEMS_REQUEST
+            type: blogItemStar.types.GETBLOGITEMS_REQUEST
           });
         } catch (error) {
           yield put({

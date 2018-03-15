@@ -30,13 +30,14 @@ manager.
   describe using the `createStar` function
 
 ```js
-import { createStar, StarTypes } from 'redux-nakshatra'
+import { createStar } from 'redux-nakshatra'
 
 export { rootSaga, types, actions, rootReducer }  = createStar({
-  name: 'post',
-  starType: StarTypes.REST, // default is StarTypes.REST
-  url: 'http://localhost:5000/posts'
-})
+  name: 'blogItem',
+  http: {
+    url: 'http://localhost:5000/blogitems'
+  }
+});
 ```
 
 * You can use in your redux store configuration now. For example
@@ -45,7 +46,7 @@ export { rootSaga, types, actions, rootReducer }  = createStar({
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { fork } from 'redux-saga/effects';
-import * as Posts from '../stars/posts';
+import * as BlogItems from '../stars/blogItems';
 
 const composeEnhancers =
   typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
@@ -58,11 +59,11 @@ const sagaMiddleware = createSagaMiddleware();
 const middlewares = [sagaMiddleware];
 
 const appReducer = combineReducers({
-  posts: Posts.rootReducer
+  blogItems: BlogItems.rootReducer
 });
 
 function* rootSaga() {
-  yield fork(Posts.rootSaga);
+  yield fork(BlogItems.rootSaga);
 }
 
 const enhancer = composeEnhancers(applyMiddleware(...middlewares));
@@ -94,9 +95,9 @@ const styles = StyleSheet.create({
   }
 });
 
-class PostsView extends Component {
+class BlogItemsScreen extends Component {
   componentWillMount() {
-    this.props.actions.getPosts();
+    this.props.actions.getBlogItems();
   }
 
   renderItem(item, index, array) {
@@ -120,15 +121,15 @@ class PostsView extends Component {
 
 const mapStateToProps = state => {
   return {
-    ...state.posts.getPosts
+    ...state.blogItems.getBlogItems
   };
 };
 
 const mapDispatchToProps = dispatch => {
-  return { actions: bindActionCreators(Posts.actions, dispatch) };
+  return { actions: bindActionCreators(BlogItems.actions, dispatch) };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PostsView);
+export default connect(mapStateToProps, mapDispatchToProps)(BlogItemsScreen);
 ```
 
 ## Documentation

@@ -61,7 +61,7 @@ class BlogItemsDetailedScreen extends Component {
   }
 
   render() {
-    const { data, loading, error } = this.props.posts.getPost;
+    const { data, loading, error } = this.props.blogItems.getBlogItem;
     if ((loading || data === null) && error === null) {
       return <ActivityIndicator size="large" />;
     }

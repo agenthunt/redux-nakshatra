@@ -2,417 +2,86 @@ import { ucfirst, replacePathParamsByValue } from './utils/index';
 import { take, call, put, all, fork } from 'redux-saga/effects';
 import axios from 'axios';
 import idx from 'idx';
-import StarTypes from './starTypes';
 
-export default function createSagas({ name, pluralName, types, url, override, starType, generateDefault, log, moreSagas, add }) {
-  const nameUpperCase = name.toUpperCase();
-  const pluralNameUpperCase = pluralName.toUpperCase();
-  const ucFirstName = ucfirst(name);
-  const ucFirstPluralName = ucfirst(pluralName);
-
+export default function createSagas({ types, combinedObjs, log, moreSagas }) {
   let defaultSagas = {};
-  if (generateDefault && starType === StarTypes.REST) {
-    defaultSagas = {
-      *[`watchGet${ucFirstPluralName}RequestSaga`]() {
+
+  let combinedSagas = {};
+  Object.keys(combinedObjs).forEach(key => {
+    const obj = combinedObjs[key];
+    const ucFirstKey = ucfirst(key);
+    const nameUpperCase = key.toUpperCase();
+    if (obj.saga) {
+      combinedSagas[`watch${ucFirstKey}RequestSaga`] = obj.saga;
+    } else {
+      combinedSagas[`watch${ucFirstKey}RequestSaga`] = function*() {
         while (true) {
-          const request = yield take(types[`GET_${pluralNameUpperCase}_REQUEST`]);
+          const request = yield take(types[`${nameUpperCase}_REQUEST`]);
 
           const pathParams = idx(request, _ => _.obj.pathParams);
-          let finalizedUrl = url;
-          if (idx(request, _ => _.obj.url)) {
-            const urlFromObj = idx(request, _ => _.obj.url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else if (idx(override, _ => _[`get${ucFirstPluralName}`].url)) {
-            const urlFromObj = idx(override, _ => _[`get${ucFirstPluralName}`].url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          }
-
-          try {
-            const result = yield call(() =>
-              axios({
-                method: 'get',
-                url: finalizedUrl,
-                headers:
-                  idx(request, _ => _.obj.headers) ||
-                  idx(override, _ => _[`get${ucFirstPluralName}`].headers) ||
-                  idx(override, _ => _.headers),
-                params:
-                  idx(request, _ => _.obj.params) || idx(override, _ => _[`get${ucFirstPluralName}`].params) || idx(override, _ => _.params)
-              })
-            );
-            if (result.status !== 200) {
-              throw result;
-            }
-            const transformResponse = idx(override, _ => _[`get${ucFirstPluralName}`].transformResponse);
-            yield put({
-              type: types[`GET_${pluralNameUpperCase}_SUCCESS`],
-              response: (transformResponse && transformResponse(result)) || result
-            });
-          } catch (error) {
-            log && console.error(error);
-            yield put({
-              type: types[`GET_${pluralNameUpperCase}_FAILURE`],
-              response: error
-            });
-          }
-        }
-      },
-      *[`watchGet${ucFirstName}RequestSaga`]() {
-        while (true) {
-          const request = yield take(types[`GET_${nameUpperCase}_REQUEST`]);
-
-          const pathParams = idx(request, _ => _.obj.pathParams);
-          let finalizedUrl = url; // use url value the createStar configuration
+          let finalizedUrl = obj.url; // use url value the createStar configuration
           if (idx(request, _ => _.obj.url)) {
             // 1. Check in request obj
             const urlFromObj = idx(request, _ => _.obj.url);
             finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else if (idx(override, _ => _[`get${ucFirstName}`].url)) {
-            // 2. Next check in override configuration
-            const urlFromObj = idx(override, _ => _[`get${ucFirstName}`].url);
+          } else if (idx(obj, _ => _.url)) {
+            const urlFromObj = idx(obj, _ => _.url);
             finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
           } else {
             // use standard REST convention, i.e for singular get, patch and delete expect an id path param
-            if (!pathParams || !pathParams.id) {
-              throw new Error(`Expecting get${ucFirstName} {pathParams: { id: <someValue> }}`);
+            if (!pathParams.id) {
+              throw new Error('{pathParams: { id: <someValue> }} expected');
             }
-            finalizedUrl = `${url}/${pathParams.id}`;
-          }
-
-          if (finalizedUrl.trim().length === 0) {
-            throw new Error(`url cannot be empty for ${ucFirstName}`);
+            finalizedUrl = replacePathParamsByValue(obj.url, pathParams);
           }
 
           try {
             const result = yield call(() => {
               const config = {
-                method: 'get',
+                method: idx(request, _ => _.obj.method) || obj.method,
                 url: finalizedUrl,
-                headers:
-                  idx(request, _ => _.obj.headers) || idx(override, _ => _[`get${ucFirstName}`].headers) || idx(override, _ => _.headers),
-                params:
-                  idx(request, _ => _.obj.params) || idx(override, _ => _[`get${ucFirstName}`].params) || idx(override, _ => _.params),
-                responseType:
-                  idx(request, _ => _.obj.responseType) ||
-                  idx(override, _ => _[`get${ucFirstName}`].responseType) ||
-                  idx(override, _ => _.responseType)
+                headers: idx(request, _ => _.obj.headers),
+                params: idx(request, _ => _.obj.params),
+                data: idx(request, _ => _.obj.data)
               };
 
-              const transformResponse =
-                idx(request, _ => _.obj.transformResponse) ||
-                idx(override, _ => _[`get${ucFirstName}`].transformResponse) ||
-                idx(override, _ => _.transformResponse);
-
-              const transformRequest =
-                idx(request, _ => _.obj.transformRequest) ||
-                idx(override, _ => _[`get${ucFirstName}`].transformRequest) ||
-                idx(override, _ => _.transformRequest);
-              if (transformResponse) {
-                config.transformResponse = transformResponse;
-              }
+              const transformResponse = idx(request, _ => _.obj.transformResponse);
+              const transformRequest = idx(request, _ => _.obj.transformRequest);
               if (transformRequest) {
                 config.transformRequest = transformRequest;
               }
+              if (transformResponse) {
+                config.transformResponse = transformResponse;
+              }
+
               return axios(config);
             });
-            if (result.status !== 200) {
-              throw result;
-            }
-            yield put({
-              type: types[`GET_${nameUpperCase}_SUCCESS`],
-              response: result
-            });
-          } catch (error) {
-            log && console.error(error);
-            yield put({
-              type: types[`GET_${nameUpperCase}_FAILURE`],
-              response: error
-            });
-          }
-        }
-      },
-      *[`watchPost${ucFirstName}RequestSaga`]() {
-        while (true) {
-          const request = yield take(types[`POST_${nameUpperCase}_REQUEST`]);
-          const pathParams = idx(request, _ => _.obj.pathParams);
-          let finalizedUrl = url; // use url value the createStar configuration
-          if (idx(request, _ => _.obj.url)) {
-            // 1. Check in request obj
-            const urlFromObj = idx(request, _ => _.obj.url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else if (idx(override, _ => _[`post${ucFirstName}`].url)) {
-            // 2. Next check in override configuration
-            const urlFromObj = idx(override, _ => _[`post${ucFirstName}`].url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          }
 
-          try {
-            const result = yield call(() =>
-              axios({
-                method: 'post',
-                url: finalizedUrl,
-                headers:
-                  idx(request, _ => _.obj.headers) || idx(override, _ => _[`post${ucFirstName}`].headers) || idx(override, _ => _.headers),
-                params:
-                  idx(request, _ => _.obj.params) || idx(override, _ => _[`post${ucFirstName}`].params) || idx(override, _ => _.params),
-                data: idx(request, _ => _.obj.data) || idx(override, _ => _[`post${ucFirstName}`].data)
-              })
-            );
             if (result.status !== 200 && result.status !== 201) {
               throw result;
             }
             yield put({
-              type: types[`POST_${nameUpperCase}_SUCCESS`],
-              response: result
-            });
-          } catch (error) {
-            log && console.error(`post${ucFirstName} failed`, error);
-            yield put({
-              type: types[`POST_${nameUpperCase}_FAILURE`],
-              response: error
-            });
-          }
-        }
-      },
-      *[`watchDelete${ucFirstName}RequestSaga`]() {
-        while (true) {
-          const request = yield take(types[`DELETE_${nameUpperCase}_REQUEST`]);
-
-          const pathParams = idx(request, _ => _.obj.pathParams);
-          let finalizedUrl = url; // use url value the createStar configuration
-          if (idx(request, _ => _.obj.url)) {
-            // 1. Check in request obj
-            const urlFromObj = idx(request, _ => _.obj.url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else if (idx(override, _ => _[`delete${ucFirstName}`].url)) {
-            // 2. Next check in override configuration
-            const urlFromObj = idx(override, _ => _[`delete${ucFirstName}`].url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else {
-            // use standard REST convention, i.e for singular get, patch and delete expect an id path param
-            if (!pathParams.id) {
-              throw new Error('{pathParams: { id: <someValue> }} expected');
-            }
-            finalizedUrl = replacePathParamsByValue(url, pathParams);
-          }
-
-          try {
-            const result = yield call(() =>
-              axios({
-                method: 'delete',
-                url: finalizedUrl,
-                headers:
-                  idx(request, _ => _.obj.headers) ||
-                  idx(override, _ => _[`delete${ucFirstName}`].headers) ||
-                  idx(override, _ => _.headers),
-                params:
-                  idx(request, _ => _.obj.params) || idx(override, _ => _[`delete${ucFirstName}`].params) || idx(override, _ => _.params)
-              })
-            );
-            if (result.status !== 200) {
-              throw result;
-            }
-            yield put({
-              type: types[`DELETE_${nameUpperCase}_SUCCESS`],
+              type: types[`${nameUpperCase}_SUCCESS`],
               response: result
             });
           } catch (error) {
             log && console.error(error);
             yield put({
-              type: types[`DELETE_${nameUpperCase}_FAILURE`],
+              type: types[`${nameUpperCase}_FAILURE`],
               response: error
             });
           }
         }
-      },
-      *[`watchPut${ucFirstName}RequestSaga`]() {
-        while (true) {
-          const request = yield take(types[`PUT_${nameUpperCase}_REQUEST`]);
-          const pathParams = idx(request, _ => _.obj.pathParams);
-          let finalizedUrl = url; // use url value the createStar configuration
-          if (idx(request, _ => _.obj.url)) {
-            // 1. Check in request obj
-            const urlFromObj = idx(request, _ => _.obj.url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else if (idx(override, _ => _[`put${ucFirstName}`].url)) {
-            // 2. Next check in override configuration
-            const urlFromObj = idx(override, _ => _[`put${ucFirstName}`].url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else {
-            // use standard REST convention, i.e for singular get, patch and delete expect an id path param
-            if (!pathParams.id) {
-              throw new Error('{pathParams: { id: <someValue> }} expected');
-            }
-            finalizedUrl = replacePathParamsByValue(url, pathParams);
-          }
-
-          try {
-            const result = yield call(() =>
-              axios({
-                method: 'put',
-                url: finalizedUrl,
-                headers:
-                  idx(request, _ => _.obj.headers) || idx(override, _ => _[`put${ucFirstName}`].headers) || idx(override, _ => _.headers),
-                params:
-                  idx(request, _ => _.obj.params) || idx(override, _ => _[`put${ucFirstName}`].params) || idx(override, _ => _.params),
-                data: idx(request, _ => _.obj.data) || idx(override, _ => _[`put${ucFirstName}`].data)
-              })
-            );
-            if (result.status !== 200) {
-              throw result;
-            }
-            yield put({
-              type: types[`PUT_${nameUpperCase}_SUCCESS`],
-              response: result
-            });
-          } catch (error) {
-            log && console.error(error);
-            yield put({
-              type: types[`PUT_${nameUpperCase}_FAILURE`],
-              response: error
-            });
-          }
-        }
-      },
-      *[`watchPatch${ucFirstName}RequestSaga`]() {
-        while (true) {
-          const request = yield take(types[`PATCH_${nameUpperCase}_REQUEST`]);
-          const pathParams = idx(request, _ => _.obj.pathParams);
-          let finalizedUrl = url; // use url value the createStar configuration
-          if (idx(request, _ => _.obj.url)) {
-            // 1. Check in request obj
-            const urlFromObj = idx(request, _ => _.obj.url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else if (idx(override, _ => _[`patch${ucFirstName}`].url)) {
-            // 2. Next check in override configuration
-            const urlFromObj = idx(override, _ => _[`patch${ucFirstName}`].url);
-            finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-          } else {
-            // use standard REST convention, i.e for singular get, patch and delete expect an id path param
-            if (!pathParams.id) {
-              throw new Error('{pathParams: { id: <someValue> }} expected');
-            }
-            finalizedUrl = replacePathParamsByValue(url, pathParams);
-          }
-
-          try {
-            const result = yield call(() =>
-              axios({
-                method: 'patch',
-                url: finalizedUrl,
-                headers:
-                  idx(request, _ => _.obj.headers) || idx(override, _ => _[`patch${ucFirstName}`].headers) || idx(override, _ => _.headers),
-                params:
-                  idx(request, _ => _.obj.params) || idx(override, _ => _[`patch${ucFirstName}`].params) || idx(override, _ => _.params),
-                data: idx(request, _ => _.obj.data) || idx(override, _ => _[`patch${ucFirstName}`].data)
-              })
-            );
-            if (result.status !== 200) {
-              throw result;
-            }
-            yield put({
-              type: types[`PATCH_${nameUpperCase}_SUCCESS`],
-              response: result
-            });
-          } catch (error) {
-            log && console.error(error);
-            yield put({
-              type: types[`PATCH_${nameUpperCase}_FAILURE`],
-              response: error
-            });
-          }
-        }
-      }
-    };
-  }
-
-  let addSagas = {};
-  add &&
-    Object.keys(add).forEach(key => {
-      const addObj = add[key];
-      const nameUpperCase = key.toUpperCase();
-      const ucFirstName = ucfirst(key);
-      const actionName = addObj.method;
-      const actionNameUpperCase = actionName.toUpperCase();
-      if (addObj.saga) {
-        addSagas[`watch${actionName}${ucFirstName}RequestSaga`] = addObj.saga;
-      } else {
-        addSagas[`watch${actionName}${ucFirstName}RequestSaga`] = function*() {
-          while (true) {
-            const request = yield take(types[`${actionNameUpperCase}_${nameUpperCase}_REQUEST`]);
-
-            const pathParams = idx(request, _ => _.obj.pathParams);
-            let finalizedUrl = addObj.url; // use url value the createStar configuration
-            if (idx(request, _ => _.obj.url)) {
-              // 1. Check in request obj
-              const urlFromObj = idx(request, _ => _.obj.url);
-              finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-            } else if (idx(addObj, _ => _.url)) {
-              const urlFromObj = idx(addObj, _ => _.url);
-              finalizedUrl = replacePathParamsByValue(urlFromObj, pathParams);
-            } else {
-              // use standard REST convention, i.e for singular get, patch and delete expect an id path param
-              if (!pathParams.id) {
-                throw new Error('{pathParams: { id: <someValue> }} expected');
-              }
-              finalizedUrl = replacePathParamsByValue(addObj.url, pathParams);
-            }
-
-            try {
-              const result = yield call(() => {
-                const config = {
-                  method: idx(request, _ => _.obj.method) || idx(override, _ => _[`${actionName}${ucFirstName}`].method) || addObj.method,
-                  url: finalizedUrl,
-                  headers:
-                    idx(request, _ => _.obj.headers) ||
-                    idx(override, _ => _[`${actionName}${ucFirstName}`].headers) ||
-                    idx(override, _ => _.headers),
-                  params:
-                    idx(request, _ => _.obj.params) ||
-                    idx(override, _ => _[`${actionName}${ucFirstName}`].params) ||
-                    idx(override, _ => _.params),
-                  data: idx(request, _ => _.obj.data) || idx(override, _ => _[`${actionName}${ucFirstName}`].data)
-                };
-
-                const transformResponse =
-                  idx(request, _ => _.obj.transformResponse) || idx(override, _ => _[`${actionName}${ucFirstName}`].transformResponse);
-                const transformRequest =
-                  idx(request, _ => _.obj.transformRequest) || idx(override, _ => _[`${actionName}${ucFirstName}`].transformRequest);
-                if (transformRequest) {
-                  config.transformRequest = transformRequest;
-                }
-                if (transformResponse) {
-                  config.transformResponse = transformResponse;
-                }
-
-                return axios(config);
-              });
-
-              if (result.status !== 200) {
-                throw result;
-              }
-              yield put({
-                type: types[`${actionNameUpperCase}_${nameUpperCase}_SUCCESS`],
-                response: result
-              });
-            } catch (error) {
-              log && console.error(error);
-              yield put({
-                type: types[`${actionNameUpperCase}_${nameUpperCase}_FAILURE`],
-                response: error
-              });
-            }
-          }
-        };
-      }
-    });
+      };
+    }
+  });
   const sagas = {
     ...defaultSagas,
     ...moreSagas,
-    ...addSagas
+    ...combinedSagas
   };
-  function* rootSaga() {
-    const allSagas = Object.keys(sagas).map(key => fork(sagas[key]));
+  function* rootSaga(args) {
+    const allSagas = Object.keys(sagas).map(key => fork(sagas[key], args));
     yield all([allSagas]);
   }
   return rootSaga;

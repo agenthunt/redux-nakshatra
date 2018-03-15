@@ -1,8 +1,7 @@
-import { createStar, StarTypes } from 'redux-nakshatra';
+import { createStar } from 'redux-nakshatra';
 
 export const { types, actions, rootReducer, rootSaga } = createStar({
   name: 'navigation',
-  starType: StarTypes.CUSTOM,
   types: {
     NAVIGATE_TO: 'NAVIGATE_TO'
   },

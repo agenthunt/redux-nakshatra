@@ -1,5 +1,4 @@
 import { createStar } from './createStar';
-import StarTypes from './starTypes';
 import warning from './utils/warning';
 
 /*
@@ -18,4 +17,4 @@ if (process.env.NODE_ENV !== 'production' && typeof isCrushed.name === 'string' 
   );
 }
 
-export { createStar, StarTypes };
+export { createStar };

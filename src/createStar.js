@@ -3,7 +3,7 @@ import createTypes from './createTypes';
 import createActions from './createActions';
 import createRootSaga from './createRootSaga';
 import createRootReducer from './createRootReducer';
-import StarTypes from './starTypes';
+import { ucfirst } from './utils/index';
 
 /**
  *
@@ -11,11 +11,8 @@ import StarTypes from './starTypes';
  * @param {Object} A config object that has the following properties
  * @namespace
  * @property {name}
- * @property {pluralName}
- * @property {url}
- * @property {starType}  Default is StarTypes.REST
- * @property {override}
- * @property {add}
+ * @property {http}
+ * @property {custom}
  * @property {types}
  * @property {actions}
  * @property {reducer}
@@ -31,12 +28,8 @@ import StarTypes from './starTypes';
 
 export function createStar({
   name,
-  pluralName,
-  url,
-  starType = StarTypes.REST,
-  generateDefault = true,
-  override,
-  add,
+  http,
+  custom,
   initialState: moreInitialState,
   types: moreTypes,
   actions: moreActions,
@@ -44,70 +37,86 @@ export function createStar({
   sagas: moreSagas,
   log = false
 }) {
-  if (starType === StarTypes.CUSTOM) {
-    name = '';
-  } else {
-    if (generateDefault === true) {
-      if (name === undefined || name === null) {
-        throw new Error(`name cannot be null for ${StarTypes[starType]}`);
+  if (!name) {
+    throw new Error('name config is mandatory');
+  }
+
+  if (name && name === '') {
+    throw new Error('name cannot be empty');
+  }
+
+  const ucFirstName = ucfirst(name);
+
+  let defaultHttpObjs = {};
+  let addHttpObjs = {};
+  let customObjs = {};
+
+  if (http) {
+    defaultHttpObjs = {
+      [`get${ucFirstName}`]: {
+        url: (http.override && http.override[`get${ucFirstName}`].url) || `${http.url}/:id`,
+        method: (http.override && http.override[`get${ucFirstName}`].method) || 'get'
+      },
+      [`get${ucFirstName}s`]: {
+        url: (http.override && http.override[`get${ucFirstName}s`].url) || http.url,
+        method: (http.override && http.override[`get${ucFirstName}s`].method) || 'get'
+      },
+      [`post${ucFirstName}`]: {
+        url: (http.override && http.override[`post${ucFirstName}`].url) || http.url,
+        method: (http.override && http.override[`post${ucFirstName}`].method) || 'post'
+      },
+      [`patch${ucFirstName}`]: {
+        url: (http.override && http.override[`patch${ucFirstName}`].url) || `${http.url}/:id`,
+        method: (http.override && http.override[`patch${ucFirstName}`].method) || 'patch'
+      },
+      [`put${ucFirstName}`]: {
+        url: (http.override && http.override[`put${ucFirstName}`].url) || `${http.url}/:id`,
+        method: (http.override && http.override[`put${ucFirstName}`].method) || 'put'
+      },
+      [`delete${ucFirstName}`]: {
+        url: (http.override && http.override[`delete${ucFirstName}`].url) || `${http.url}/:id`,
+        method: (http.override && http.override[`delete${ucFirstName}`].method) || 'delete'
       }
-    } else {
-      name = '';
+    };
+
+    if (http.add) {
+      addHttpObjs = {
+        ...http.add
+      };
     }
   }
 
-  if (starType === StarTypes.REST) {
-    if (!url) {
-      throw new Error('url cannot be undefined or null');
-    }
-    if (url.trim().length === 0) {
-      throw new Error('url cannot be empty');
-    }
+  if (custom) {
+    customObjs = custom;
   }
 
-  if (pluralName === null || pluralName === undefined) {
-    pluralName = `${name}s`;
-  }
+  const combinedObjs = {
+    ...defaultHttpObjs,
+    ...addHttpObjs,
+    ...customObjs
+  };
 
   const types = createTypes({
-    name,
-    pluralName,
-    starType,
-    generateDefault,
-    moreTypes,
-    add
+    combinedObjs,
+    moreTypes
   });
 
   const actions = createActions({
-    name,
-    pluralName,
     types,
-    starType,
-    generateDefault,
-    moreActions,
-    add
+    combinedObjs,
+    moreActions
   });
 
   const rootReducer = createRootReducer({
-    name,
-    pluralName,
-    moreInitialState,
     types,
-    starType,
-    generateDefault,
-    reducer,
-    add
+    combinedObjs,
+    moreInitialState,
+    reducer
   });
 
   const rootSaga = createRootSaga({
-    name,
-    pluralName,
     types,
-    url,
-    override,
-    add,
-    starType,
-    generateDefault,
+    combinedObjs,
     moreSagas,
     log
   });
