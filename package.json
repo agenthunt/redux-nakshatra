@@ -1,9 +1,9 @@
 {
   "name": "redux-nakshatra",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Redux addon library generates Sagas, Types, Actions, Reducers",
-  "main": "lib/redux-nakshatra.js",
   "module": "es/redux-nakshatra.js",
+  "main": "dist/redux-nakshatra.js",
   "typings": "./index.d.ts",
   "files": ["dist", "lib", "es", "src", "index.d.ts"],
   "scripts": {
@@ -64,8 +64,8 @@
     "loose-envify": "1.3.1"
   },
   "peerDependencies": {
-    "axios": "0.18.0",
-    "redux-saga": "0.16.0"
+    "axios": ">= 0.18.0",
+    "redux-saga": ">= 0.16.0"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
@@ -75,6 +75,7 @@
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-idx": "2.2.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-regenerator": "6.26.0",
     "babel-preset-env": "^1.6.1",
     "babel-register": "^6.26.0",
     "cross-env": "^5.1.0",

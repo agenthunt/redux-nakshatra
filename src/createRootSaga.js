@@ -1,7 +1,6 @@
 import { ucfirst, replacePathParamsByValue } from './utils/index';
 import { take, call, put, all, fork } from 'redux-saga/effects';
 import axios from 'axios';
-import idx from 'idx';
 
 export default function createSagas({ types, combinedObjs, log, moreSagas }) {
   let defaultSagas = {};
@@ -13,10 +12,9 @@ export default function createSagas({ types, combinedObjs, log, moreSagas }) {
     if (obj.saga) {
       combinedSagas[`watch${ucFirstKey}RequestSaga`] = obj.saga;
     } else {
-      combinedSagas[`watch${ucFirstKey}RequestSaga`] = function*() {
+      combinedSagas[`watch${ucFirstKey}RequestSaga`] = function* saga() {
         while (true) {
           const request = yield take(types[`${key}_REQUEST`]);
-
           const pathParams = idx(request, _ => _.obj.pathParams);
           let finalizedUrl = obj.url; // use url value the createStar configuration
           if (idx(request, _ => _.obj.url)) {
@@ -33,7 +31,6 @@ export default function createSagas({ types, combinedObjs, log, moreSagas }) {
             }
             finalizedUrl = replacePathParamsByValue(obj.url, pathParams);
           }
-
           try {
             const result = yield call(() => {
               const config = {
@@ -43,7 +40,6 @@ export default function createSagas({ types, combinedObjs, log, moreSagas }) {
                 params: idx(request, _ => _.obj.params),
                 data: idx(request, _ => _.obj.data)
               };
-
               const transformResponse = idx(request, _ => _.obj.transformResponse);
               const transformRequest = idx(request, _ => _.obj.transformRequest);
               if (transformRequest) {
@@ -52,10 +48,8 @@ export default function createSagas({ types, combinedObjs, log, moreSagas }) {
               if (transformResponse) {
                 config.transformResponse = transformResponse;
               }
-
               return axios(config);
             });
-
             if (result.status !== 200 && result.status !== 201) {
               throw result;
             }

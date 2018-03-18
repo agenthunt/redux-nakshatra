@@ -1,4 +1,3 @@
-import 'babel-polyfill';
 import createTypes from './createTypes';
 import createActions from './createActions';
 import createRootSaga from './createRootSaga';
@@ -40,17 +39,13 @@ export function createStar({
   if (!name) {
     throw new Error('name config is mandatory');
   }
-
   if (name && name === '') {
     throw new Error('name cannot be empty');
   }
-
   const ucFirstName = ucfirst(name);
-
   let defaultHttpObjs = {};
   let addHttpObjs = {};
   let customObjs = {};
-
   if (http) {
     if (http.generateDefault) {
       defaultHttpObjs = {
@@ -86,43 +81,36 @@ export function createStar({
       };
     }
   }
-
   if (custom) {
     customObjs = custom;
   }
-
   const combinedObjs = {
     ...defaultHttpObjs,
     ...addHttpObjs,
     ...customObjs
   };
-
   const types = createTypes({
     name,
     combinedObjs,
     moreTypes
   });
-
   const actions = createActions({
     types,
     combinedObjs,
     moreActions
   });
-
   const rootReducer = createRootReducer({
     types,
     combinedObjs,
     moreInitialState,
     reducer
   });
-
   const rootSaga = createRootSaga({
     types,
     combinedObjs,
     moreSagas,
     log
   });
-
   return {
     types,
     actions,

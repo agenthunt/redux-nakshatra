@@ -10,7 +10,7 @@ const config = {
   plugins: [
     babel({
       exclude: 'node_modules/**',
-      plugins: ['transform-object-rest-spread', 'external-helpers', 'idx']
+      plugins: ['transform-object-rest-spread', 'external-helpers', 'idx', 'transform-regenerator']
     })
   ],
   output: {

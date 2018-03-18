@@ -1,5 +1,4 @@
 import { createStar } from '../';
-import { take } from 'redux-saga/effects';
 
 describe('createStar', () => {
   it('exposes the public API', () => {

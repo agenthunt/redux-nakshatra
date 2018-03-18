@@ -4,6 +4,7 @@ import { take, put } from 'redux-saga/effects';
 const blogItemStar = createStar({
   name: 'blogItem',
   http: {
+    generateDefault: true,
     url: 'http://localhost:5000/blogitems'
   },
   types: {
@@ -46,15 +47,17 @@ const blogItemStar = createStar({
   }
 });
 
+console.log(blogItemStar);
+
 export const CustomStar = createStar({
   name: 'customStar',
   sagas: {
     *watchPostBlogItemSuccessRequestSaga() {
       while (true) {
-        yield take(blogItemStar.types.POSTBLOGITEM_SUCCESS);
+        yield take(blogItemStar.types.postBlogItem_SUCCESS);
         try {
           yield put({
-            type: blogItemStar.types.GETBLOGITEMS_REQUEST
+            type: blogItemStar.types.getBlogItems_REQUEST
           });
         } catch (error) {
           yield put({
