@@ -6,6 +6,7 @@ before_install:
   - npm i -g npm-install-peers
 script:
   - npm-install-peers
+  - npm run build
   - npm test
   - npm run examples:lint
   - npm run examples:test
