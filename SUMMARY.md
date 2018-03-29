@@ -3,3 +3,4 @@
 * [Override](/docs/Override.md)
 * [Troubleshooting](/docs/Troubleshooting.md)
 * [API Reference](/docs/api/README.md)
+  * [createStar](/docs/api/createStar.md)

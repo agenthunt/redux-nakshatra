@@ -4,7 +4,7 @@ This section documents the complete redux-nakshatra API.
 
 ### Top-Level Exports
 
-* [createStar(config)](createStar.md)
+* [createStar(config)](./createStar.md)
 
 ### Importing
 

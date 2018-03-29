@@ -1,20 +1,24 @@
 Consider the following example
 
 ```js
+import { createStar } from 'redux-nakshatra'
+
 export { rootSaga, types, actions, rootReducer }  = createStar({
-  name: 'post',
-  starType: StarTypes.REST, // default is StarTypes.REST
-  url: 'http://localhost:5000/posts'
-})
+  name: 'blogItem',
+  http: {
+    generateDefault: true,
+    url: 'http://localhost:5000/blogitems'
+  }
+});
 ```
 
-For a `StarTypes.REST`, the interpretation of url is as follows as long as any of the standard actions are overridden. For overriding See [override](/docs/Override.md)
+Fot the default generated HTTP redux actions, the interpretation of url is as follows as long as any of the standard actions are not overridden. For overriding See [override](/docs/Override.md)
 
-* plural GET requests will use url as defined in the config object i.e `http://localhost:5000/posts`
-* POST request will use url as `http://localhost:5000/posts`
-* PATCH request will url as `http://localhost:5000/posts/:id`
-* DELETE request will url as `http://localhost:5000/posts/:id`
-* singular GET request will url as `http://localhost:5000/posts/:id`
+* plural GET requests will use url as defined in the config object i.e `http://localhost:5000/blogitems`
+* POST request will use url as `http://localhost:5000/blogitems`
+* PATCH request will url as `http://localhost:5000/blogitems/:id`
+* DELETE request will url as `http://localhost:5000/blogitems/:id`
+* singular GET request will url as `http://localhost:5000/blogitems/:id`
 
 The value of id can be provided in the action object
 For ex:

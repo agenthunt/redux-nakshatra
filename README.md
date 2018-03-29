@@ -1,16 +1,12 @@
 Under development
 
-redux-nakshatra is a redux addon library that reduces redux boiler plate. This library
-aims to automate most of them with a set of opinionated conventions. Generates Sagas, Types, Actions, Reducers (STAR aka nakshatra)
+redux-nakshatra is a small redux addon library that generates redux boilerplate based on configuration.
+
+Sagas ([redux-saga](https://redux-saga.js.org/) , Types, Actions, Reducers (STAR aka nakshatra) are the main building blocks of this library
 
 [![build status](https://img.shields.io/travis/agenthunt/redux-nakshatra/master.svg?style=flat-square)](https://travis-ci.org/agenthunt/redux-nakshatra)
 [![npm version](https://img.shields.io/npm/v/redux-nakshatra.svg?style=flat-square)](https://www.npmjs.com/package/redux-nakshatra)
 [![npm downloads](https://img.shields.io/npm/dm/redux-nakshatra.svg?style=flat-square)](https://www.npmjs.com/package/redux-nakshatra)
-
-## Influences
-
-This library is inspired from
-[redux-rest-resource](http://mgcrea.github.io/redux-rest-resource/)
 
 ## Installation
 
@@ -20,8 +16,18 @@ To install the stable version:
 npm install --save redux-nakshatra
 ```
 
-This assumes you are using [npm](https://www.npmjs.com/) as your package
-manager.
+or
+
+```
+yarn add redux-nakshatra
+```
+
+# Peer dependencies
+
+Install the following packages
+
+* redux-saga
+* axios
 
 ## Quick start
 
@@ -35,12 +41,22 @@ import { createStar } from 'redux-nakshatra'
 export { rootSaga, types, actions, rootReducer }  = createStar({
   name: 'blogItem',
   http: {
+    generateDefault: true,
     url: 'http://localhost:5000/blogitems'
   }
 });
 ```
 
-* You can use in your redux store configuration now. For example
+* `generateDefault: true` will generate 6 different HTTP redux actions
+
+  * `getBlogItem(obj)`
+  * `getBlogItems(obj)`
+  * `postBlogItem(obj)`
+  * `patchBlogItem(obj)`
+  * `putBlogItem(obj)`
+  * `patchBlogItem(obj)`
+
+* You can then use in your redux store configuration as below.
 
 ```js
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
@@ -81,7 +97,7 @@ export default function configureStore() {
 import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
-import * as Posts from '../stars/posts';
+import * as BlogItems from '../stars/blogItems';
 import { bindActionCreators } from 'redux';
 
 const styles = StyleSheet.create({
@@ -149,3 +165,8 @@ MIT
 ## Todo
 
 * [] Option to bring in your http library
+
+## Influences
+
+This library is inspired from
+[redux-rest-resource](http://mgcrea.github.io/redux-rest-resource/)
