@@ -150,23 +150,21 @@ export default connect(mapStateToProps, mapDispatchToProps)(BlogItemsScreen);
 
 ## Documentation
 
-* [Detailed](http://redux-nakshatra.js.org/docs/Detailed.html)
-* [Troubleshooting](http://redux-nakshatra.js.org/docs/Troubleshooting.html)
+* [http](http://redux-nakshatra.js.org/docs/config/http.html)
+* [graphql](http://redux-nakshatra.js.org/docs/config/graphql.html)
+* [custom](http://redux-nakshatra.js.org/docs/config/custom.html)
 * [API Reference](http://redux-nakshatra.js.org/docs/api/index.html)
 
 ## Examples
 
-* [Simple Blog](https://github.com/agenthunt/redux-nakshatra/tree/master/examples/simple-blog)
+* [Simple Blog Http](https://github.com/agenthunt/redux-nakshatra/tree/master/examples/simple-blog)
+* [Simple Blog Graphql](https://github.com/agenthunt/redux-nakshatra/tree/master/examples/simple-blog-graphql)
+* [Simple Music Player](https://github.com/agenthunt/redux-nakshatra/tree/master/examples/simple-music-player)
 
 ## License
 
 MIT
 
-## Todo
-
-* [] Option to bring in your http library
-
 ## Influences
 
-This library is inspired from
 [redux-rest-resource](http://mgcrea.github.io/redux-rest-resource/)

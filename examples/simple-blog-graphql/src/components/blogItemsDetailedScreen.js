@@ -4,6 +4,7 @@ import * as BlogItems from '../stars/blogItems';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CommonStyles from '../styles/commonStyles';
+import gql from 'graphql-tag';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,9 +55,17 @@ const styles = StyleSheet.create({
 class BlogItemsDetailedScreen extends Component {
   componentDidMount() {
     this.props.actions.getBlogItem({
-      pathParams: {
-        id: this.props.params.id
-      }
+      query: gql`
+        query {
+          BlogItem(id: ${this.props.params.id}) {
+            id
+            title
+            author
+            image,
+            long_description
+          }
+        }
+      `
     });
   }
 
@@ -68,14 +77,14 @@ class BlogItemsDetailedScreen extends Component {
 
     return (
       <View style={[styles.container]}>
-        <Image source={{ uri: data.data.image, width: 600, height: 400 }} style={styles.image} />
+        <Image source={{ uri: data.BlogItem.image, width: 600, height: 400 }} style={styles.image} />
         <Text numberOfLines={1} style={styles.title}>
-          {data.data.title}
+          {data.BlogItem.title}
         </Text>
         <Text numberOfLines={1} style={styles.author}>
-          {data.data.author}
+          {data.BlogItem.author}
         </Text>
-        <Text style={styles.description}>{data.data.long_description}</Text>
+        <Text style={styles.description}>{data.BlogItem.long_description}</Text>
       </View>
     );
   }

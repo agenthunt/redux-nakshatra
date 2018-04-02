@@ -11,12 +11,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'stretch'
+    alignItems: 'stretch',
+    margin: 80
   },
   trackItem: {
     flexDirection: 'row',
     height: 80,
-    alignItems: 'center'
+    alignItems: 'center',
+    padding: 16
   },
   play: {
     width: 48,
@@ -37,8 +39,10 @@ class App extends Component {
     const playStatus = currentTrack && currentTrack.id === track.id ? status : MediaPlayerStatus.PAUSED;
     return (
       <View key={index} style={[CommonStyles.card, styles.trackItem]}>
-        <PlayPauseButton status={playStatus} onPress={() => this.props.actions.playPause(track)} />
-        <Text style={styles.title}>{track.title}</Text>
+        <PlayPauseButton status={playStatus} onPress={() => this.props.actions.playPause(track)} iconSize={48} />
+        <Text style={styles.title}>
+          {track.title} - {track.file}
+        </Text>
       </View>
     );
   };
@@ -46,7 +50,7 @@ class App extends Component {
   render() {
     const { tracks } = this.props.mediaPlayer;
     return (
-      <View style={[styles.container, this.props.style]}>
+      <View style={[styles.container, CommonStyles.card, this.props.style]}>
         {this.renderPlayer()}
         <ScrollView>{tracks.map(this.renderTrack)}</ScrollView>
       </View>

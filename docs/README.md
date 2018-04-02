@@ -1,7 +1,8 @@
 ## Table of Contents
 
 * [Read Me](/README.md)
-* [Detailed](/docs/Detailed.md)
-* [Override](/docs/Override.md)
-* [Troubleshooting](/docs/Troubleshooting.md)
+* [http](/docs/config/http.md)
+* [http](/docs/config/graphql.md)
+* [custom](/docs/config/custom.md)
 * [API Reference](/docs/api/README.md)
+  * [createStar](/docs/api/createStar.md)

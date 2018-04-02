@@ -12,7 +12,7 @@ export default function createSagas({ types, combinedObjs, log, moreSagas }) {
     const ucFirstKey = ucfirst(key);
     if (obj.saga) {
       combinedSagas[`watch${ucFirstKey}RequestSaga`] = obj.saga;
-    } else {
+    } else if (obj.type === 'http') {
       combinedSagas[`watch${ucFirstKey}RequestSaga`] = function* saga() {
         while (true) {
           const request = yield take(types[`${key}_REQUEST`]);
@@ -53,6 +53,35 @@ export default function createSagas({ types, combinedObjs, log, moreSagas }) {
             });
             if (result.status !== 200 && result.status !== 201) {
               throw result;
+            }
+            yield put({
+              type: types[`${key}_SUCCESS`],
+              response: result
+            });
+          } catch (error) {
+            log && console.error(error);
+            yield put({
+              type: types[`${key}_FAILURE`],
+              response: error
+            });
+          }
+        }
+      };
+    } else if (obj.type === 'graphql') {
+      combinedSagas[`watch${ucFirstKey}RequestSaga`] = function* saga() {
+        while (true) {
+          const request = yield take(types[`${key}_REQUEST`]);
+          try {
+            const payload = request.obj || obj.payload;
+            let promise = null;
+            if (payload.query) {
+              promise = obj.client.query(payload);
+            } else {
+              promise = obj.client.mutate(payload);
+            }
+            const result = yield call(() => promise);
+            if (result.error) {
+              throw result.error;
             }
             yield put({
               type: types[`${key}_SUCCESS`],

@@ -7,36 +7,70 @@ export default function createRootReducer({ types, combinedObjs, moreInitialStat
       error: null,
       data: null
     };
-    combinedReducers[types[`${key}_REQUEST`]] = function(state, action) {
-      return {
-        ...state,
-        [key]: {
-          ...state[key],
-          loading: true,
-          error: null
-        }
+    if (combinedObjs[key].type === 'graphql') {
+      combinedReducers[types[`${key}_REQUEST`]] = function(state, action) {
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            loading: true,
+            error: null
+          }
+        };
       };
-    };
-    combinedReducers[types[`${key}_SUCCESS`]] = function(state, action) {
-      return {
-        ...state,
-        [key]: {
-          ...state[key],
-          loading: false,
-          data: action.response
-        }
+      combinedReducers[types[`${key}_SUCCESS`]] = function(state, action) {
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            data: action.response.data,
+            loading: action.response.loading,
+            error: null
+          }
+        };
       };
-    };
-    combinedReducers[types[`${key}_FAILURE`]] = function(state, action) {
-      return {
-        ...state,
-        [key]: {
-          ...state[key],
-          loading: false,
-          error: action.response
-        }
+      combinedReducers[types[`${key}_FAILURE`]] = function(state, action) {
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            loading: false,
+            error: action.response
+          }
+        };
       };
-    };
+    } else {
+      combinedReducers[types[`${key}_REQUEST`]] = function(state, action) {
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            loading: true,
+            error: null
+          }
+        };
+      };
+      combinedReducers[types[`${key}_SUCCESS`]] = function(state, action) {
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            loading: false,
+            data: action.response
+          }
+        };
+      };
+      combinedReducers[types[`${key}_FAILURE`]] = function(state, action) {
+        return {
+          ...state,
+          [key]: {
+            ...state[key],
+            loading: false,
+            error: action.response
+          }
+        };
+      };
+    }
   });
 
   const initialState = {

@@ -1,3 +1,63 @@
+And sometimes you need to write a fully custom saga may be aggregating data from different end points (http, graphql or local state or anything) In this case, you can do something similar as shown below
+
+```js
+import { take, call, put, all, fork, race, select } from 'redux-saga/effects';
+import { createStar } from 'redux-nakshatra';
+import axios from 'axios';
+
+export const { rootSaga, types, actions, rootReducer } = createStar({
+  name: 'users',
+  http: {
+    url: 'http://localhost:5000/users',
+    generateDefault: true
+  },
+  custom: {
+    getUsersAndFriends: {
+      saga: function* watchGetUsersAndFriendsRequestSaga(dispatch) {
+        while (true) {
+          const request = yield take(types.getUsersAndFriends_REQUEST);
+          try {
+            yield put({
+              type: types.getUsers_REQUEST
+            });
+
+            yield race([types.getUsers_SUCCESS, types.getUsers_FAILURE]);
+            const getUsers = yield select(state => state.getUsers);
+            const userIds = getUsers.data.map(o => o.id);
+            const getFriendsForUsers = yield call(() =>
+              axios({
+                url: 'http://localhost:5000/friends',
+                data: {
+                  userIds
+                }
+              })
+            );
+            const result = getUsers.data.map((user, index) => {
+              return {
+                ...user,
+                friend: getFriendsForUsers.data[index]
+              };
+            });
+            yield put({
+              type: types.getUsersAndFriends_SUCCESS,
+              response: result
+            });
+          } catch (error) {
+            yield put({
+              type: types.getUsersAndFriends_FAILURE,
+              response: error
+            });
+          }
+        }
+      }
+    }
+  }
+});
+```
+
+If you need more low level control, you can add more actions, types, initialState, reducer, sagas separately as well. Example
+
+```js
 import { createStar } from 'redux-nakshatra';
 import { take, put, race, select } from 'redux-saga/effects';
 import { MediaPlayerStatus } from '../constants/mediaPlayerStatus';
@@ -202,3 +262,4 @@ export const { rootSaga, types, actions, rootReducer } = createStar({
     }
   }
 });
+```
