@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+  - "8"
+before_install:
+  - npm i -g npm
+  - npm i -g npm-install-peers
+script:
+  - npm-install-peers
+  - npm run build
+  - npm test
+  - npm run examples:lint
+  - npm run examples:test
+branches:
+  only:
+    - master
+    - next
+cache:
+  directories:
+  - examples/simple-blog/node_modules

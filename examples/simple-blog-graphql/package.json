@@ -1,0 +1,33 @@
+{
+  "name": "simple-blog-graphql",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "apollo-cache-inmemory": "1.1.12",
+    "apollo-client": "2.2.8",
+    "apollo-link-error": "1.0.7",
+    "apollo-link-http": "1.5.3",
+    "faker": "4.1.0",
+    "graphql": "0.13.2",
+    "graphql-tag": "2.8.0",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-native-web": "0.5.4",
+    "react-redux": "5.0.7",
+    "react-scripts": "1.1.1",
+    "redux": "3.7.2",
+    "redux-saga": "0.16.0"
+  },
+  "scripts": {
+    "start": "concurrently 'yarn start-server' 'yarn start-client'",
+    "start-client": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "start-server": "NODE_PORT=5000 json-graphql-server server/db.js"
+  },
+  "devDependencies": {
+    "concurrently": "3.5.1",
+    "json-graphql-server": "2.1.1"
+  }
+}

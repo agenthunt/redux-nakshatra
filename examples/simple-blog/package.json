@@ -1,0 +1,29 @@
+{
+  "name": "simple-blog",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "axios": "0.18.0",
+    "babel-polyfill": "6.26.0",
+    "faker": "4.1.0",
+    "json-server": "0.12.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-native-web": "0.4.0",
+    "react-redux": "5.0.6",
+    "react-scripts": "1.1.1",
+    "redux": "3.7.2",
+    "redux-nakshatra": "../../",
+    "redux-saga": "0.16.0"
+  },
+  "scripts": {
+    "start": "concurrently 'json-server --watch server/db.json --port 5000'  'react-scripts start'",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "start-server": "json-server --watch server/db.json --port 5000"
+  },
+  "devDependencies": {
+    "concurrently": "3.5.1"
+  }
+}
