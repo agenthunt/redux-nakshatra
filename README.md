@@ -36,9 +36,9 @@ Install the following packages
   describe using the `createStar` function
 
 ```js
-import { createStar } from 'redux-nakshatra'
+import { createStar } from 'redux-nakshatra';
 
-export { rootSaga, types, actions, rootReducer }  = createStar({
+export const { types, actions, rootReducer, rootSaga } = createStar({
   name: 'blogItem',
   http: {
     generateDefault: true,
